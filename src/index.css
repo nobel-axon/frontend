@@ -237,3 +237,25 @@ body::after {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+/* Live feed entry animation */
+@keyframes feed-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+    background-color: rgba(255, 107, 53, 0.15);
+  }
+  40% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+    background-color: transparent;
+  }
+}
+
+.feed-event {
+  animation: feed-enter 500ms ease-out both;
+}

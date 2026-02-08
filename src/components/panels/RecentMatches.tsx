@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { config } from '../../config';
 import { useInfiniteAPI } from '../../hooks/useInfiniteAPI';
 import { fetchRecentMatchesPage, fetchMatchAnswers, fetchMatchCommentary } from '../../services/api';
 import { fmtWei } from '../../utils/format';
@@ -213,7 +214,7 @@ function AnswerEntry({ answer }: { answer: AnswerResponse }) {
           )}
           {answer.txHash && (
             <a
-              href={`https://testnet.monadvision.com/tx/${answer.txHash}`}
+              href={`${config.blockExplorerUrl}/tx/${answer.txHash}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-text-muted hover:text-accent transition-colors"

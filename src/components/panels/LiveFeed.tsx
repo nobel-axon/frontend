@@ -210,49 +210,41 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
 
   if (event.type === 'answer' && event.agent) {
     return (
-      <div className="px-4 py-2 font-mono text-sm hover:bg-surface-hover transition-colors">
-        <div className="flex items-center gap-2">
-          <span className="text-text-muted">{time}</span>
-          <span className="text-text-secondary">
-            Agent{' '}
-            <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
-              {truncAddr(event.agent)}
-            </Link>
-            {' '}submits their answer
-            {event.neuronBurned && <>, burning {fmtWei(event.neuronBurned)} NEURON</>}
-          </span>
-        </div>
+      <div className="feed-event px-4 py-2 font-mono text-xs hover:bg-surface-hover transition-colors">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— Agent{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          {' '}submits their answer
+          {event.neuronBurned && <>, burning {fmtWei(event.neuronBurned)} NEURON</>}
+        </span>
       </div>
     );
   }
 
   if (event.type === 'answer_judged' && event.agent) {
     return (
-      <div className="px-4 py-2 font-mono text-sm hover:bg-surface-hover transition-colors">
-        <div className="flex items-center gap-2">
-          <span className="text-text-muted">{time}</span>
-          <span className="text-text-secondary">
-            The judges deliberate on{' '}
-            <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
-              {truncAddr(event.agent)}
-            </Link>
-            's response...
-          </span>
-        </div>
+      <div className="feed-event px-4 py-2 font-mono text-xs hover:bg-surface-hover transition-colors">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— The judges deliberate on{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          's response...
+        </span>
       </div>
     );
   }
 
   if (event.type === 'commentary' && event.commentary) {
     return (
-      <div className="px-4 py-2 font-mono text-sm bg-accent-50">
-        <div className="flex items-center gap-2">
-          <span className="text-text-muted">{time}</span>
-          {event.persona && <span className="text-text-secondary">[{event.persona}]</span>}
-        </div>
-        <div className="text-text-secondary italic mt-1">
-          "{event.commentary}"
-        </div>
+      <div className="feed-event px-4 py-2 font-mono text-xs bg-accent-50">
+        <span className="text-text-muted">{time}</span>
+        {event.persona && <span className="text-text-secondary"> [{event.persona}]</span>}
+        <span className="text-text-secondary"> — "{event.commentary}"</span>
       </div>
     );
   }
@@ -260,7 +252,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
   if (event.type === 'match_start') {
     const feeStr = event.entryFee ? ` Entry: ${fmtWei(event.entryFee)} MON` : '';
     return (
-      <div className="px-4 py-2 font-mono text-xs text-success">
+      <div className="feed-event px-4 py-2 font-mono text-xs text-success">
         {time} — A new arena has opened!{feeStr}
       </div>
     );
@@ -270,7 +262,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     if (event.winner) {
       const prizeStr = event.prize ? ` — ${fmtWei(event.prize)} MON` : '';
       return (
-        <div className="px-4 py-2 font-mono text-xs text-success font-bold">
+        <div className="feed-event px-4 py-2 font-mono text-xs text-success font-bold">
           {time} — Victory!{' '}
           <Link to={`/agents/${event.winner}`} className="text-accent hover:underline">
             {truncAddr(event.winner)}
@@ -280,7 +272,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
       );
     }
     return (
-      <div className="px-4 py-2 font-mono text-xs text-text-secondary">
+      <div className="feed-event px-4 py-2 font-mono text-xs text-text-secondary">
         {time} — The arena has been settled
       </div>
     );
@@ -288,7 +280,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
 
   if (event.type === 'agent_registered' && event.agent) {
     return (
-      <div className="px-4 py-2 font-mono text-xs text-accent">
+      <div className="feed-event px-4 py-2 font-mono text-xs text-accent">
         {time} — Agent{' '}
         <Link to={`/agents/${event.agent}`} className="hover:underline">
           {truncAddr(event.agent)}
@@ -301,7 +293,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
   if (event.type === 'question_posted') {
     const categoryTag = event.category ? ` [${event.category}]` : '';
     return (
-      <div className="px-4 py-2 font-mono text-xs text-success">
+      <div className="feed-event px-4 py-2 font-mono text-xs text-success">
         <span>{time} — The Nobel Inquiry is revealed:</span>
         {event.question && (
           <span className="text-text-secondary italic"> "{event.question}"</span>
@@ -313,9 +305,13 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
 
   if (event.type === 'answer_revealed') {
     return (
-      <div className="px-4 py-2 font-mono text-xs text-text-secondary">
-        {time} — The true answer is revealed
-        {event.answer && <span className="italic">: "{event.answer}"</span>}
+      <div className="feed-event px-4 py-2 font-mono text-xs hover:bg-surface-hover transition-colors">
+        <span className="text-accent">{time} — The true answer is revealed:</span>
+        {event.answer && (
+          <div className="text-text-secondary italic mt-1 line-clamp-3">
+            "{event.answer}"
+          </div>
+        )}
       </div>
     );
   }
@@ -324,7 +320,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     const reason = event.reason?.toLowerCase();
     const showReason = reason && reason !== 'cancelled' && reason !== 'canceled';
     return (
-      <div className="px-4 py-2 font-mono text-xs text-error">
+      <div className="feed-event px-4 py-2 font-mono text-xs text-error">
         {time} — The arena falls silent
         {showReason && <span className="text-text-muted"> ({event.reason})</span>}
       </div>
@@ -332,7 +328,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
   }
 
   return (
-    <div className="px-4 py-2 font-mono text-xs text-text-muted">
+    <div className="feed-event px-4 py-2 font-mono text-xs text-text-muted">
       {time} — {event.type}
     </div>
   );

@@ -6,6 +6,9 @@ export const config = {
   networkName: import.meta.env.VITE_NETWORK_NAME ?? 'Monad Testnet',
   appName: 'Nobel Arena',
 
+  // Block explorer
+  blockExplorerUrl: import.meta.env.VITE_BLOCK_EXPLORER_URL ?? 'https://testnet.monadvision.com',
+
   // API & WebSocket (env-driven, with sensible defaults)
   apiUrl: import.meta.env.VITE_API_URL ?? '',
   wsUrl:
