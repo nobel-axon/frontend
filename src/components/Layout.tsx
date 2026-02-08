@@ -1,19 +1,24 @@
 import { useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { config } from '../config';
+import { DisclaimerFlow } from './DisclaimerFlow';
+import { ScrambleText } from './ScrambleText';
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
+  const [disclaimerKey, setDisclaimerKey] = useState(0);
+
   return (
     <div className="min-h-screen lg:h-screen flex items-start lg:items-center justify-center p-2 md:p-3 lg:p-5 xl:p-6">
       <div className="floating-container flex flex-col w-full lg:h-full">
         <Header />
         <main className="flex-1 min-h-0 p-2 md:p-3 lg:p-4 overflow-y-auto">{children}</main>
-        <Footer />
+        <Footer onTermsClick={() => setDisclaimerKey((k) => k + 1)} />
       </div>
+      <DisclaimerFlow reopenKey={disclaimerKey} />
     </div>
   );
 }
@@ -27,14 +32,14 @@ function Header() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4 md:gap-8">
           <Link to="/" className="font-mono text-xl font-bold tracking-tight text-accent">
-            NOBEL
+            <ScrambleText text="NOBEL" delay={0} duration={400} />
           </Link>
           <nav className="flex gap-1">
             <NavLink to="/" active={location.pathname === '/'}>
-              ARENA
+              <ScrambleText text="ARENA" delay={50} duration={400} />
             </NavLink>
             <NavLink to="/how-to-play" active={location.pathname === '/how-to-play'}>
-              HOW TO PLAY
+              <ScrambleText text="HOW TO PLAY" delay={100} duration={400} />
             </NavLink>
           </nav>
         </div>
@@ -102,7 +107,7 @@ function AddressSearch() {
         className="px-4 py-1.5 text-sm font-medium bg-accent text-white rounded-lg shrink-0
           hover:bg-accent-600 active:bg-accent-700 transition-colors"
       >
-        Search
+        <ScrambleText text="Search" delay={120} duration={300} />
       </button>
     </form>
   );
@@ -131,14 +136,26 @@ function Ticker() {
   );
 }
 
-function Footer() {
+interface FooterProps {
+  onTermsClick: () => void;
+}
+
+function Footer({ onTermsClick }: FooterProps) {
   return (
     <footer className="px-4 md:px-6 py-2 shrink-0">
       <div className="flex items-center justify-between text-xs text-text-muted">
-        <span>{config.appName} — {config.networkName}</span>
-        <div className="flex items-center gap-1.5">
-          <span className="w-1.5 h-1.5 rounded-full bg-success" />
-          <span>Connected</span>
+        <ScrambleText text={`${config.appName} — ${config.networkName}`} delay={150} duration={400} />
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onTermsClick}
+            className="font-mono text-xs text-text-muted hover:text-accent transition-colors cursor-pointer"
+          >
+            Terms
+          </button>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-success" />
+            <ScrambleText text="Connected" delay={170} duration={300} />
+          </div>
         </div>
       </div>
     </footer>

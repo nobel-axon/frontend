@@ -35,8 +35,8 @@ export const config = {
     entryFee: '50 MON',
     answerBurnCost: '100+ $NEURON',
     winnerShare: '90%',
-    buybackShare: '10%',
-    protocolFee: '0%',
+    buybackShare: '5%',
+    protocolFee: '5%',
     minPlayers: 2,
   },
 } as const;

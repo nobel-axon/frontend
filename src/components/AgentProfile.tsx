@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useAPI } from '../hooks/useAPI';
 import { fetchAgentProfile } from '../services/api';
 import { fmtWei } from '../utils/format';
+import { ScrambleText } from './ScrambleText';
 import type { MatchResponse } from '../types';
 
 export function AgentProfile() {
@@ -19,12 +20,12 @@ export function AgentProfile() {
     <div className="space-y-6">
       {/* Back Link */}
       <Link to="/" className="font-mono text-xs text-text-muted hover:text-accent transition-colors">
-        &larr; BACK TO ARENA
+        <ScrambleText text="← BACK TO ARENA" delay={0} duration={400} />
       </Link>
 
       {/* Agent Header */}
       <div className="panel">
-        <div className="panel-header">Agent Profile</div>
+        <div className="panel-header"><ScrambleText text="Agent Profile" delay={50} duration={500} /></div>
         <div className="p-6">
           <div className="font-mono text-lg font-bold mb-4 text-accent">{address}</div>
           {loading ? (
@@ -33,18 +34,20 @@ export function AgentProfile() {
             <div className="text-error font-mono text-sm">Failed to load agent data</div>
           ) : stats ? (
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard label="Matches Played" value={String(stats.matchesPlayed)} />
-              <StatCard label="Matches Won" value={String(stats.matchesWon)} />
-              <StatCard label="Win Rate" value={`${(stats.winRate * 100).toFixed(1)}%`} />
-              <StatCard label="MON Earned" value={fmtWei(stats.totalEarnedMon)} />
-              <StatCard label="NEURON Burned" value={fmtWei(stats.totalBurnedNeuron)} />
+              <StatCard label="Matches Played" value={String(stats.matchesPlayed)} delay={100} />
+              <StatCard label="Matches Won" value={String(stats.matchesWon)} delay={140} />
+              <StatCard label="Win Rate" value={`${(stats.winRate * 100).toFixed(1)}%`} delay={180} />
+              <StatCard label="MON Earned" value={fmtWei(stats.totalEarnedMon)} delay={220} />
+              <StatCard label="NEURON Burned" value={fmtWei(stats.totalBurnedNeuron)} delay={260} />
               <StatCard
                 label="Avg Answer Time"
                 value={stats.avgAnswerTimeMs != null ? `${(stats.avgAnswerTimeMs / 1000).toFixed(1)}s` : '--'}
+                delay={300}
               />
               <StatCard
                 label="Last Active"
                 value={stats.lastActive ? formatTimeAgo(stats.lastActive) : '--'}
+                delay={340}
               />
             </div>
           ) : (
@@ -55,7 +58,7 @@ export function AgentProfile() {
 
       {/* Match History */}
       <div className="panel">
-        <div className="panel-header">Match History</div>
+        <div className="panel-header"><ScrambleText text="Match History" delay={400} duration={500} /></div>
         <div className="divide-y divide-border">
           {recentMatches.length === 0 ? (
             <div className="p-4 text-center text-text-muted font-mono text-sm">
@@ -72,11 +75,11 @@ export function AgentProfile() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: string }) {
+function StatCard({ label, value, delay = 0 }: { label: string; value: string; delay?: number }) {
   return (
     <div className="stat-card">
       <div className="font-mono text-xs text-text-muted uppercase tracking-wide mb-1">
-        {label}
+        <ScrambleText text={label} delay={delay} duration={400} />
       </div>
       <div className="font-mono text-lg font-semibold text-accent">{value}</div>
     </div>

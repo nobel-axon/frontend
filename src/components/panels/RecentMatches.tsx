@@ -4,6 +4,7 @@ import { config } from '../../config';
 import { useInfiniteAPI } from '../../hooks/useInfiniteAPI';
 import { fetchRecentMatchesPage, fetchMatchAnswers, fetchMatchCommentary } from '../../services/api';
 import { fmtWei } from '../../utils/format';
+import { ScrambleText } from '../ScrambleText';
 import type { MatchResponse, AnswerResponse, CommentaryResponse } from '../../types';
 
 export function RecentMatches() {
@@ -17,7 +18,7 @@ export function RecentMatches() {
 
   return (
     <div className="panel h-full flex flex-col">
-      <div className="panel-header shrink-0">Recent Matches</div>
+      <div className="panel-header shrink-0"><ScrambleText text="Recent Matches" delay={450} duration={500} /></div>
       {loading ? (
         <div className="p-4 text-center text-text-muted font-mono text-sm animate-pulse">Loading...</div>
       ) : matches.length === 0 ? (

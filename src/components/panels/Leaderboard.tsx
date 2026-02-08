@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useInfiniteAPI } from '../../hooks/useInfiniteAPI';
 import { fetchLeaderboardPage } from '../../services/api';
 import { fmtWei } from '../../utils/format';
+import { ScrambleText } from '../ScrambleText';
 import type { LeaderboardEntry } from '../../types';
 
 export function Leaderboard() {
@@ -18,7 +19,7 @@ export function Leaderboard() {
   return (
     <div className="panel h-full flex flex-col">
       <div className="panel-header shrink-0 flex items-center justify-between">
-        <span>Leaderboard</span>
+        <ScrambleText text="Leaderboard" delay={500} duration={500} />
         <button
           onClick={() => setRefreshKey(k => k + 1)}
           className="text-text-muted hover:text-text-primary transition-colors text-xs font-mono"
@@ -36,12 +37,12 @@ export function Leaderboard() {
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-border">
           <div className="px-3 py-1.5 flex items-center gap-2 font-mono text-[10px] text-text-muted sticky top-0 bg-surface">
-            <div className="w-5">#</div>
-            <div className="flex-1">Address</div>
-            <div className="w-16 text-right">MON Earned</div>
-            <div className="w-8 text-right">Wins</div>
-            <div className="w-12 text-right">Matches</div>
-            <div className="w-10 text-right">Win %</div>
+            <div className="w-5"><ScrambleText text="#" delay={530} duration={400} /></div>
+            <div className="flex-1"><ScrambleText text="Address" delay={530} duration={400} /></div>
+            <div className="w-16 text-right"><ScrambleText text="MON Earned" delay={530} duration={400} /></div>
+            <div className="w-8 text-right"><ScrambleText text="Wins" delay={530} duration={400} /></div>
+            <div className="w-12 text-right"><ScrambleText text="Matches" delay={530} duration={400} /></div>
+            <div className="w-10 text-right"><ScrambleText text="Win %" delay={530} duration={400} /></div>
           </div>
           {entries.map((entry, i) => (
             <LeaderboardRow key={entry.agentAddr} entry={entry} rank={i + 1} />
