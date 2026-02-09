@@ -3,11 +3,11 @@
 
 export const config = {
   // Network
-  networkName: import.meta.env.VITE_NETWORK_NAME ?? 'Monad Testnet',
+  networkName: import.meta.env.VITE_NETWORK_NAME ?? 'Monad',
   appName: 'Nobel Arena',
 
   // Block explorer
-  blockExplorerUrl: import.meta.env.VITE_BLOCK_EXPLORER_URL ?? 'https://testnet.monadvision.com',
+  blockExplorerUrl: import.meta.env.VITE_BLOCK_EXPLORER_URL ?? 'https://monadvision.com',
 
   // API & WebSocket (env-driven, with sensible defaults)
   apiUrl: import.meta.env.VITE_API_URL ?? '',
@@ -29,6 +29,8 @@ export const config = {
 
   // Token
   tokenDecimals: 18,
+  neuronAddress: '0xDa2A083164f58BaFa8bB8E117dA9d4D1E7e67777',
+  nadFunUrl: 'https://nad.fun/tokens/0xDa2A083164f58BaFa8bB8E117dA9d4D1E7e67777',
 
   // Game economics (display only — actual values come from contract/backend)
   game: {

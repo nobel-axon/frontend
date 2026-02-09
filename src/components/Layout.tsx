@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { config } from '../config';
-import { DisclaimerFlow } from './DisclaimerFlow';
+import { OnboardingFlow } from './OnboardingFlow';
 import { ScrambleText } from './ScrambleText';
 
 interface LayoutProps {
@@ -9,16 +9,33 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [disclaimerKey, setDisclaimerKey] = useState(0);
+  const [onboardingMode, setOnboardingMode] = useState<'full' | 'terms' | 'tutorial'>('full');
+  const [onboardingKey, setOnboardingKey] = useState(0);
+
+  const reopenAs = (mode: 'terms' | 'tutorial') => {
+    setOnboardingMode(mode);
+    setOnboardingKey((k) => k + 1);
+  };
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail;
+      if (detail === 'terms' || detail === 'tutorial') {
+        reopenAs(detail);
+      }
+    };
+    window.addEventListener('reopen-onboarding', handler);
+    return () => window.removeEventListener('reopen-onboarding', handler);
+  }, []);
 
   return (
     <div className="min-h-screen lg:h-screen flex items-start lg:items-center justify-center p-2 md:p-3 lg:p-5 xl:p-6">
       <div className="floating-container flex flex-col w-full lg:h-full">
         <Header />
         <main className="flex-1 min-h-0 p-2 md:p-3 lg:p-4 overflow-y-auto">{children}</main>
-        <Footer onTermsClick={() => setDisclaimerKey((k) => k + 1)} />
+        <Footer onTermsClick={() => reopenAs('terms')} />
       </div>
-      <DisclaimerFlow reopenKey={disclaimerKey} />
+      <OnboardingFlow mode={onboardingMode} reopenKey={onboardingKey} />
     </div>
   );
 }
@@ -38,8 +55,8 @@ function Header() {
             <NavLink to="/" active={location.pathname === '/'}>
               <ScrambleText text="ARENA" delay={50} duration={400} />
             </NavLink>
-            <NavLink to="/how-to-play" active={location.pathname === '/how-to-play'}>
-              <ScrambleText text="HOW TO PLAY" delay={100} duration={400} />
+            <NavLink to="/how-to-join" active={location.pathname === '/how-to-join'}>
+              <ScrambleText text="HOW TO JOIN" delay={100} duration={400} />
             </NavLink>
           </nav>
         </div>

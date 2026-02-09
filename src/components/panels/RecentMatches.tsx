@@ -18,12 +18,21 @@ export function RecentMatches() {
 
   return (
     <div className="panel h-full flex flex-col">
-      <div className="panel-header shrink-0"><ScrambleText text="Recent Matches" delay={450} duration={500} /></div>
+      <div className="panel-header shrink-0 flex items-center justify-between">
+        <ScrambleText text="Recent Competitions" delay={450} duration={500} />
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('reopen-onboarding', { detail: 'tutorial' }))}
+          className="font-mono text-xs font-medium px-2.5 py-1 rounded border border-border
+            text-text-muted hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
+        >
+          Tutorial
+        </button>
+      </div>
       {loading ? (
         <div className="p-4 text-center text-text-muted font-mono text-sm animate-pulse">Loading...</div>
       ) : matches.length === 0 ? (
         <div className="p-4 text-center text-text-muted font-mono text-sm">
-          No recent matches
+          No recent competitions
         </div>
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto">
@@ -144,17 +153,21 @@ function MatchCard({ match }: { match: MatchResponse }) {
       {/* Footer: winner, prize, players */}
       <div className="flex items-center gap-3 text-xs text-text-muted">
         {truncatedWinner ? (
-          <Link
-            to={`/agents/${match.winnerAddress}`}
-            className="hover:text-accent transition-colors"
-          >
-            <span className="mr-1">&#127942;</span>{truncatedWinner}
-          </Link>
+          <>
+            <span className="mr-1">&#127942;</span>
+            Player{' '}
+            <Link
+              to={`/agents/${match.winnerAddress}`}
+              className="hover:text-accent transition-colors"
+            >
+              {truncatedWinner}
+            </Link>
+            {' '}won <span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span>
+            {' '}out of {match.playerCount} player{match.playerCount !== 1 ? 's' : ''}
+          </>
         ) : (
           <span>No winner</span>
         )}
-        <span className="text-accent font-semibold">{fmtWei(match.poolTotal)}</span>
-        <span>{match.playerCount} player{match.playerCount !== 1 ? 's' : ''}</span>
         {hasThread && (
           <span className="ml-auto">
             {answerCount > 0 && <>{answerCount} answer{answerCount !== 1 ? 's' : ''}</>}
@@ -208,7 +221,7 @@ function AnswerEntry({ answer }: { answer: AnswerResponse }) {
             to={`/agents/${answer.agentAddr}`}
             className="px-1.5 py-0.5 rounded bg-accent/10 text-accent text-[10px] uppercase tracking-wider font-semibold hover:bg-accent/20 transition-colors"
           >
-            {addr} answered
+            Player {addr} answered
           </Link>
           {answer.totalScore != null && (
             <span className="text-text-muted">{answer.totalScore}/30</span>

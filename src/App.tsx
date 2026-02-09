@@ -14,7 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/agents/:address" element={<AgentProfile />} />
-            <Route path="/how-to-play" element={<HowToPlay />} />
+            <Route path="/how-to-join" element={<HowToPlay />} />
           </Routes>
         </Layout>
       </StatsProvider>
