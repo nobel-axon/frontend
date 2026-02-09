@@ -13,6 +13,7 @@ type EventType =
   | 'question_posted'
   | 'answer_revealed'
   | 'match_cancelled'
+  | 'personalities_assigned'
   | 'burn';
 
 export interface FeedEvent {
@@ -158,6 +159,20 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         agent: data.agentAddr as string,
         playerCount: data.playerCount as number,
       };
+
+    case 'personalities_assigned': {
+      const personalities = data.personalities as Array<{ name: string }> | undefined;
+      const names = Array.isArray(personalities)
+        ? personalities.map((p) => p.name).join(', ')
+        : '';
+      return {
+        id,
+        type: 'personalities_assigned',
+        timestamp: now,
+        matchId: data.matchId as number,
+        commentary: names,
+      };
+    }
 
     case 'question_posted':
       return {

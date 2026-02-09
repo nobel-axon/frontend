@@ -100,11 +100,14 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
   }
 
   if (event.type === 'commentary' && event.commentary) {
+    const isSystem = event.persona === 'system';
     return (
-      <div className="feed-event px-4 py-2 font-mono text-xs bg-accent-50">
+      <div className={`feed-event px-4 py-2 font-mono text-xs ${isSystem ? 'text-accent' : 'bg-accent-50'}`}>
         <span className="text-text-muted">{time}</span>
-        {event.persona && <span className="text-text-secondary"> [{event.persona}]</span>}
-        <span className="text-text-secondary"> — "{event.commentary}"</span>
+        {!isSystem && event.persona && <span className="text-text-secondary"> [{event.persona}]</span>}
+        <span className="text-text-secondary">
+          {' '}— {isSystem ? event.commentary : `"${event.commentary}"`}
+        </span>
       </div>
     );
   }
@@ -120,7 +123,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
 
   if (event.type === 'match_end') {
     if (event.winner) {
-      const prizeStr = event.prize ? ` — ${fmtWei(event.prize)} MON` : '';
+      const prizeStr = event.prize && event.prize !== '0' ? ` — ${fmtWei(event.prize)} MON` : '';
       return (
         <div className="feed-event px-4 py-2 font-mono text-xs text-success font-bold">
           {time} — Victory!{' '}
@@ -146,6 +149,16 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
           {truncAddr(event.agent)}
         </Link>
         {' '}steps into the arena{event.playerCount ? ` (${event.playerCount} challengers)` : ''}
+      </div>
+    );
+  }
+
+  if (event.type === 'personalities_assigned' && event.commentary) {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-accent">
+        <span className="text-text-muted">{time}</span>
+        <span> — The judges take their seats: </span>
+        <span className="text-text-secondary italic">{event.commentary}</span>
       </div>
     );
   }
