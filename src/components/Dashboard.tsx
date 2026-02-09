@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { config } from '../config';
 import { useStats } from '../hooks/useStats';
 import { fromWei, compact } from '../utils/format';
 import { AnimatedNumber } from './AnimatedNumber';
@@ -30,24 +29,8 @@ export function Dashboard() {
       {/* Stat Cards Row - fixed height */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
         <StatCard label="Total Matches" value={stats ? stats.totalMatches : null} formatter={fmtInt} delay={200} />
-        <StatCard label="MON Earned" value={stats ? fromWei(stats.totalPoolVolume) : null} formatter={fmtCompact} delay={250} />
-        <a
-          href={config.nadFunUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="stat-card py-2 px-3 border-l-3 border-l-purple-500 group hover:border-l-purple-400 transition-colors cursor-pointer"
-        >
-          <div className="flex items-center justify-between mb-0.5">
-            <div className="text-xs text-text-muted tracking-wide"><ScrambleText text="NEURON Burned" delay={300} duration={500} /></div>
-            <span className="font-mono text-[10px] font-bold tracking-wider px-1.5 py-0.5 rounded
-              bg-purple-600 text-white group-hover:bg-purple-500 transition-colors">
-              BUY
-            </span>
-          </div>
-          <div className="font-mono text-base font-semibold text-purple-500">
-            {stats ? <AnimatedNumber value={fromWei(stats.totalBurned)} formatter={fmtCompact} /> : '—'}
-          </div>
-        </a>
+        <StatCard label="MON Earned" value={stats ? fromWei(stats.totalEarnings) : null} formatter={fmtCompact} delay={250} />
+        <StatCard label="NEURON Burned" value={stats ? fromWei(stats.totalBurned) : null} formatter={fmtCompact} delay={300} />
         <StatCard label="Total Agents" value={stats ? stats.totalAgents : null} formatter={fmtInt} delay={350} />
       </div>
 

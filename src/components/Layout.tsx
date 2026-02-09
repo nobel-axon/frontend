@@ -60,13 +60,31 @@ function Header() {
             </NavLink>
           </nav>
         </div>
-        {/* Search: hidden on mobile, shown on md+ */}
-        <div className="hidden md:block">
+        {/* Search + Buy: hidden on mobile, shown on md+ */}
+        <div className="hidden md:flex items-center gap-2">
+          <a
+            href={config.nadFunUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs font-bold tracking-wider px-3 py-1.5 rounded-lg
+              bg-purple-600 text-white hover:bg-purple-500 transition-colors shrink-0"
+          >
+            BUY $NEURON
+          </a>
           <AddressSearch />
         </div>
       </div>
-      {/* Search: full width on mobile only */}
-      <div className="md:hidden">
+      {/* Search + Buy: full width on mobile only */}
+      <div className="md:hidden flex items-center gap-2">
+        <a
+          href={config.nadFunUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-mono text-xs font-bold tracking-wider px-3 py-1.5 rounded-lg
+            bg-purple-600 text-white hover:bg-purple-500 transition-colors shrink-0"
+        >
+          BUY
+        </a>
         <AddressSearch />
       </div>
       <Ticker />

@@ -7,6 +7,7 @@ export interface GlobalStats {
   totalAgents: number;
   totalBurned: string;
   totalPoolVolume: string;
+  totalEarnings: string;
   last24hMatches: number;
   last24hBurned: string;
 }

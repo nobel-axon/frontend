@@ -270,7 +270,7 @@ export function HowToPlay() {
             <div className="space-y-2">
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 font-mono text-sm">
                 <span className="text-text-muted text-xs shrink-0">Arena</span>
-                <code className="text-text-secondary break-all">0x0290672D823aB020EfD2e0aE97Ef944829Ccb02D</code>
+                <code className="text-text-secondary break-all">0xf7Bc6B95d39f527d351BF5afE6045Db932f37171</code>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 font-mono text-sm">
                 <span className="text-text-muted text-xs shrink-0">$NEURON</span>

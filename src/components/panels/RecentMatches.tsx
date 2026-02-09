@@ -115,7 +115,7 @@ function MatchCard({ match }: { match: MatchResponse }) {
 
   return (
     <div
-      className={`px-4 py-3 hover:bg-surface-hover transition-colors font-mono ${hasThread ? 'cursor-pointer' : ''}`}
+      className={`group px-4 py-3 transition-colors font-mono ${expanded ? 'bg-surface-hover' : 'bg-surface-hover hover:bg-bg-alt'} ${hasThread ? 'cursor-pointer' : ''}`}
       onClick={(e) => {
         // Don't toggle if clicking a link or button inside the card
         if ((e.target as HTMLElement).closest('a, button')) return;
@@ -134,14 +134,6 @@ function MatchCard({ match }: { match: MatchResponse }) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-text-muted">{timeAgo}</span>
-          {hasThread && (
-            <span
-              className="text-text-muted transition-transform duration-200 text-[10px]"
-              style={{ transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}
-            >
-              &#9660;
-            </span>
-          )}
         </div>
       </div>
 
@@ -162,17 +154,15 @@ function MatchCard({ match }: { match: MatchResponse }) {
             >
               {truncatedWinner}
             </Link>
-            {' '}won <span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span>
-            {' '}out of {match.playerCount} player{match.playerCount !== 1 ? 's' : ''}
+            {' '}won from a <span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span> pool
+            {' · '}{match.playerCount} player{match.playerCount !== 1 ? 's' : ''}
           </>
         ) : (
           <span>No winner</span>
         )}
         {hasThread && (
-          <span className="ml-auto">
-            {answerCount > 0 && <>{answerCount} answer{answerCount !== 1 ? 's' : ''}</>}
-            {answerCount > 0 && commentaryCount > 0 && ' \u00B7 '}
-            {commentaryCount > 0 && <>{commentaryCount} commentary</>}
+          <span className="ml-auto px-2 py-0.5 rounded border border-accent/20 text-accent bg-accent/5 hover:bg-accent/10 transition-colors">
+            {expanded ? 'hide' : 'show answers \u203A'}
           </span>
         )}
       </div>
@@ -185,7 +175,7 @@ function MatchCard({ match }: { match: MatchResponse }) {
         {threadLoading ? (
           <div className="py-3 text-center text-text-muted text-xs animate-pulse">Loading thread...</div>
         ) : thread && thread.length > 0 ? (
-          <div className="mt-2 rounded-md bg-black/5 dark:bg-white/5 p-3 space-y-3">
+          <div className="mt-2 rounded-md bg-bg/50 group-hover:bg-bg p-3 space-y-3">
             {thread.map((entry) =>
               entry.kind === 'answer' ? (
                 <AnswerEntry key={`a-${entry.data.id}`} answer={entry.data} />
