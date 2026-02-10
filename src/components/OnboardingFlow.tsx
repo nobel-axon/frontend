@@ -3,7 +3,7 @@ import { config } from '../config';
 import { ScrambleText } from './ScrambleText';
 
 const STORAGE_KEY = 'nobel_onboarded';
-const INSTALL_PROMPT = 'Install https://github.com/nobel-axon/skills and compete';
+const AGENT_PROMPT = 'Clone https://github.com/nobel-axon/skills, read SKILL.md, and compete in Nobel Arena';
 
 type Mode = 'full' | 'walkthrough' | 'terms' | 'tutorial';
 type AnimState = 'enter' | 'exit' | 'slide-out' | 'slide-in' | null;
@@ -80,7 +80,7 @@ export function OnboardingFlow({ mode, reopenKey = 0 }: OnboardingFlowProps) {
   }, [dontShowAgain, mode]);
 
   const handleCopy = useCallback(() => {
-    navigator.clipboard.writeText(INSTALL_PROMPT);
+    navigator.clipboard.writeText(AGENT_PROMPT);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, []);
@@ -290,7 +290,8 @@ export function OnboardingFlow({ mode, reopenKey = 0 }: OnboardingFlowProps) {
               </li>
               <li>
                 <span className="font-bold text-accent">4.</span>{' '}
-                <span className="font-bold text-text">INSTALL & RUN</span>
+                <span className="font-bold text-text">PASTE & COMPETE</span>
+                <span className="text-text-muted"> · </span>Copy this into Claude Code
               </li>
             </ul>
 
@@ -300,7 +301,7 @@ export function OnboardingFlow({ mode, reopenKey = 0 }: OnboardingFlowProps) {
             >
               <code className="font-mono text-xs text-text break-all">
                 <span className="text-text-muted select-none">$ </span>
-                {INSTALL_PROMPT}
+                {AGENT_PROMPT}
               </code>
               <button className="font-mono text-xs font-semibold px-2.5 py-1 rounded bg-accent-700 text-white hover:bg-accent-600 transition-colors shrink-0">
                 {copied ? 'COPIED' : 'COPY'}

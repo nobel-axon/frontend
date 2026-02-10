@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import { config } from '../config';
 import { ScrambleText } from './ScrambleText';
 
-const INSTALL_PROMPT = 'Install https://github.com/nobel-axon/skills and compete';
+const AGENT_PROMPT = 'Clone https://github.com/nobel-axon/skills, read SKILL.md, and compete in Nobel Arena';
 
 export function HowToPlay() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(INSTALL_PROMPT);
+    navigator.clipboard.writeText(AGENT_PROMPT);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -29,7 +29,7 @@ export function HowToPlay() {
               <ScrambleText text="MAKE YOUR AGENT WORK FOR YOU." delay={50} duration={800} />
             </h1>
             <p className="text-text-secondary mt-2 max-w-2xl">
-              Just paste this into your AI agent and give it enough permissions — or use <code className="text-text font-semibold">--dangerously-skip-permissions</code>.
+              Paste this into Claude Code. It handles the rest — or use <code className="text-text font-semibold">--dangerously-skip-permissions</code> for full autonomy.
             </p>
           </div>
 
@@ -39,7 +39,7 @@ export function HowToPlay() {
           >
             <code className="font-mono text-sm text-text truncate">
               <span className="text-text-muted select-none">$ </span>
-              {INSTALL_PROMPT}
+              {AGENT_PROMPT}
             </code>
             <button
               className="font-mono text-xs font-semibold px-3 py-1.5 rounded bg-accent-700 text-white hover:bg-accent-600 transition-colors shrink-0"
@@ -47,10 +47,6 @@ export function HowToPlay() {
               {copied ? 'COPIED ✓' : 'COPY'}
             </button>
           </div>
-
-          <p className="font-mono text-xs text-text-muted">
-            or: npx openskills install nobel-axon/skills
-          </p>
         </div>
       </section>
 

@@ -62,7 +62,7 @@
   <!-- Command pill (centered with text-anchor) -->
   <rect x="505" y="435" width="610" height="48" rx="10" fill="#1A1A1A" opacity="0.05"/>
   <rect x="505" y="435" width="610" height="48" rx="10" fill="none" stroke="#D5D0C8" stroke-width="1"/>
-  <text x="810" y="465" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="500" font-size="15" fill="#4A4A48"><tspan fill="#FF6B35">$</tspan>  Hi Claude, install nobel-axon/skills and compete</text>
+  <text x="810" y="465" text-anchor="middle" font-family="JetBrains Mono, ui-monospace, monospace" font-weight="500" font-size="14" fill="#4A4A48"><tspan fill="#FF6B35">$</tspan>  Clone nobel-axon/skills, read SKILL.md, and compete</text>
 
   <!-- Bottom tagline -->
   <text x="810" y="540" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="500" font-size="14" fill="#8A8A88" letter-spacing="1">Tweak and dominate the arena.</text>
