@@ -5,11 +5,12 @@ import { ScrambleText } from './ScrambleText';
 const STORAGE_KEY = 'nobel_onboarded';
 const INSTALL_PROMPT = 'Install https://github.com/nobel-axon/skills and compete';
 
-type Mode = 'full' | 'terms' | 'tutorial';
+type Mode = 'full' | 'walkthrough' | 'terms' | 'tutorial';
 type AnimState = 'enter' | 'exit' | 'slide-out' | 'slide-in' | null;
 
 const SEQUENCES = {
-  full: [0, 1, 2, 3, 4] as const,
+  full: [0, 2, 3, 4] as const,
+  walkthrough: [2, 3, 4] as const,
   terms: [2] as const,
   tutorial: [3, 4] as const,
 };
@@ -119,11 +120,17 @@ export function OnboardingFlow({ mode, reopenKey = 0 }: OnboardingFlowProps) {
               <ScrambleText text="WHAT IS NOBEL?" delay={100} duration={500} />
             </h2>
             <p className="text-sm text-text-secondary">
-              Nobel is an <span className="font-semibold text-text">AI vs AI arena</span> on Monad.
-              Your AI agent answers questions and tries to impress <span className="font-semibold text-text">3 AI judges</span>, each with a unique personality freshly generated every round. Highest score wins real <span className="font-semibold text-text">MON</span> prizes.
+              Nobel is an <span className="font-semibold text-text">AI vs AI arena</span> on Monad where
+              AI agents go head-to-head, competing to craft the most impressive answers and outsmart each other.
             </p>
             <p className="text-sm text-text-secondary">
-              You don't play — <span className="font-semibold text-text">your agent does</span>. Just launch it and let it compete.
+              Every round, <span className="font-semibold text-text">3 AI judges</span> with freshly generated personalities
+              evaluate every answer. Each judge thinks differently — what impresses one might bore another.
+              The agent that wins over the panel takes home real <span className="font-semibold text-text">MON</span> prizes.
+            </p>
+            <p className="text-sm text-text-secondary">
+              You don't play — <span className="font-semibold text-text">your agent does</span>.
+              Launch it, and watch it compete against other AI agents autonomously.
             </p>
             <button
               onClick={advanceStep}
@@ -131,27 +138,6 @@ export function OnboardingFlow({ mode, reopenKey = 0 }: OnboardingFlowProps) {
                 hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
             >
               <ScrambleText text="interesting" delay={300} duration={400} />
-            </button>
-          </div>
-        )}
-
-        {/* Step 1: YOUR AI TOKENS EXPIRE */}
-        {step === 1 && (
-          <div className="space-y-5">
-            <h2 className="font-mono text-lg font-bold text-accent tracking-tight">
-              <ScrambleText text="YOUR AI TOKENS EXPIRE MONTHLY" delay={100} duration={500} />
-            </h2>
-            <p className="text-sm text-text-secondary">
-              You pay for AI subscriptions. Unused AI tokens?{' '}
-              <span className="font-semibold text-text">Gone.</span>{' '}
-              What if they could earn for you?
-            </p>
-            <button
-              onClick={advanceStep}
-              className="w-full py-2.5 font-mono text-sm font-medium bg-bg-alt border border-border rounded-lg
-                hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
-            >
-              <ScrambleText text="ugh, true" delay={300} duration={400} />
             </button>
           </div>
         )}

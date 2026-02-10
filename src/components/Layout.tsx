@@ -9,10 +9,10 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [onboardingMode, setOnboardingMode] = useState<'full' | 'terms' | 'tutorial'>('full');
+  const [onboardingMode, setOnboardingMode] = useState<'full' | 'walkthrough' | 'terms' | 'tutorial'>('full');
   const [onboardingKey, setOnboardingKey] = useState(0);
 
-  const reopenAs = (mode: 'terms' | 'tutorial') => {
+  const reopenAs = (mode: 'full' | 'walkthrough' | 'terms' | 'tutorial') => {
     setOnboardingMode(mode);
     setOnboardingKey((k) => k + 1);
   };
@@ -20,7 +20,7 @@ export function Layout({ children }: LayoutProps) {
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<string>).detail;
-      if (detail === 'terms' || detail === 'tutorial') {
+      if (detail === 'full' || detail === 'walkthrough' || detail === 'terms' || detail === 'tutorial') {
         reopenAs(detail);
       }
     };

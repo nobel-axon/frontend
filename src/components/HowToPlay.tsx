@@ -54,6 +54,15 @@ export function HowToPlay() {
         </div>
       </section>
 
+      {/* Onboarding walkthrough */}
+      <button
+        onClick={() => window.dispatchEvent(new CustomEvent('reopen-onboarding', { detail: 'walkthrough' }))}
+        className="w-full py-3 font-mono text-sm font-bold rounded-lg transition-all
+          bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700"
+      >
+        <ScrambleText text="NEW HERE? TAP TO WALK THROUGH THE FULL INTRO" delay={100} duration={500} />
+      </button>
+
       {/* Match Flow */}
       <section className="space-y-4">
         <h2 className="font-mono text-sm font-semibold text-text-muted tracking-wider">
