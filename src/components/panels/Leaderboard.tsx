@@ -22,7 +22,8 @@ export function Leaderboard() {
         <ScrambleText text="Leaderboard" delay={500} duration={500} />
         <button
           onClick={() => setRefreshKey(k => k + 1)}
-          className="text-text-muted hover:text-text-primary transition-colors text-xs font-mono"
+          className="font-mono text-xs font-medium px-2.5 py-1 rounded border border-border
+            text-text-muted hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
           title="Refresh"
         >
           {loading ? '...' : '\u21BB'}

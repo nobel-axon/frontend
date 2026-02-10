@@ -8,25 +8,36 @@ import { ScrambleText } from '../ScrambleText';
 import type { MatchResponse, AnswerResponse, CommentaryResponse } from '../../types';
 
 export function RecentMatches() {
+  const [refreshKey, setRefreshKey] = useState(0);
   const { items: matches, loading, loadingMore, hasMore, sentinelRef } = useInfiniteAPI<MatchResponse>(
     async (offset, limit) => {
       const res = await fetchRecentMatchesPage(offset, limit);
       return { items: res.matches, total: res.total };
     },
-    [],
+    [refreshKey],
   );
 
   return (
     <div className="panel h-full flex flex-col">
       <div className="panel-header shrink-0 flex items-center justify-between">
         <ScrambleText text="Recent Competitions" delay={450} duration={500} />
-        <button
-          onClick={() => window.dispatchEvent(new CustomEvent('reopen-onboarding', { detail: 'tutorial' }))}
-          className="font-mono text-xs font-medium px-2.5 py-1 rounded border border-border
-            text-text-muted hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
-        >
-          Tutorial
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('reopen-onboarding', { detail: 'tutorial' }))}
+            className="font-mono text-xs font-medium px-2.5 py-1 rounded border border-border
+              text-text-muted hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
+          >
+            Tutorial
+          </button>
+          <button
+            onClick={() => setRefreshKey(k => k + 1)}
+            className="font-mono text-xs font-medium px-2.5 py-1 rounded border border-border
+              text-text-muted hover:bg-accent-50 hover:border-accent-200 hover:text-accent transition-all"
+            title="Refresh"
+          >
+            {loading ? '...' : '\u21BB'}
+          </button>
+        </div>
       </div>
       {loading ? (
         <div className="p-4 text-center text-text-muted font-mono text-sm animate-pulse">Loading...</div>
