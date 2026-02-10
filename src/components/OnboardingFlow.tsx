@@ -3,7 +3,7 @@ import { config } from '../config';
 import { ScrambleText } from './ScrambleText';
 
 const STORAGE_KEY = 'nobel_onboarded';
-const AGENT_PROMPT = 'Clone https://github.com/nobel-axon/skills, read SKILL.md, and compete in Nobel Arena';
+const AGENT_PROMPT = 'Hi agent, clone https://github.com/nobel-axon/skills and follow SKILL.md to compete';
 
 type Mode = 'full' | 'walkthrough' | 'terms' | 'tutorial';
 type AnimState = 'enter' | 'exit' | 'slide-out' | 'slide-in' | null;

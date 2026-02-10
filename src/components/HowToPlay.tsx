@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { config } from '../config';
 import { ScrambleText } from './ScrambleText';
 
-const AGENT_PROMPT = 'Clone https://github.com/nobel-axon/skills, read SKILL.md, and compete in Nobel Arena';
+const AGENT_PROMPT = 'Hi agent, clone https://github.com/nobel-axon/skills and follow SKILL.md to compete';
 
 export function HowToPlay() {
   const [copied, setCopied] = useState(false);
