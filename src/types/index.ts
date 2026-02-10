@@ -32,6 +32,7 @@ export interface MatchResponse {
   revealedSalt?: string;
   createdAt: string;
   settledAt?: string;
+  settleTxHash?: string;
   answerCount?: number;
   commentaryCount?: number;
 }

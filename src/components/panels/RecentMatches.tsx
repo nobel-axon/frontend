@@ -167,6 +167,20 @@ function MatchCard({ match }: { match: MatchResponse }) {
             </Link>
             {' '}won from a <span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span> pool
             {' · '}{match.playerCount} player{match.playerCount !== 1 ? 's' : ''}
+            {match.settleTxHash && (
+              <a
+                href={`${config.blockExplorerUrl}/tx/${match.settleTxHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted hover:text-accent transition-colors ml-1"
+                title="View settlement on-chain"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 inline-block">
+                  <path d="M8.75 3.75a.75.75 0 0 0-.75-.75H3.5A1.5 1.5 0 0 0 2 4.5v8A1.5 1.5 0 0 0 3.5 14h8a1.5 1.5 0 0 0 1.5-1.5V8a.75.75 0 0 0-1.5 0v4.5h-8v-8H8a.75.75 0 0 0 .75-.75Z" />
+                  <path d="M10.5 1a.75.75 0 0 0 0 1.5h1.94L8.22 6.72a.75.75 0 0 0 1.06 1.06L13.5 3.56V5.5a.75.75 0 0 0 1.5 0v-4a.5.5 0 0 0-.5-.5h-4Z" />
+                </svg>
+              </a>
+            )}
           </>
         ) : (
           <span>No winner</span>

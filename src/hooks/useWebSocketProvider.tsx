@@ -30,6 +30,7 @@ export interface FeedEvent {
   category?: string;
   winner?: string;
   prize?: string;
+  settleTxHash?: string;
   reason?: string;
   playerCount?: number;
   entryFee?: string;
@@ -148,6 +149,7 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         matchId: data.matchId as number,
         winner: data.winnerAddr as string,
         prize: data.prizeMon as string,
+        settleTxHash: data.settleTxHash as string | undefined,
       };
 
     case 'agent_registered':

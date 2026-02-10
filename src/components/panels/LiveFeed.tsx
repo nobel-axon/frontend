@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useWebSocketContext } from '../../hooks/useWebSocketProvider';
 import { fmtWei } from '../../utils/format';
+import { config } from '../../config';
 import { ScrambleText } from '../ScrambleText';
 import type { FeedEvent } from '../../hooks/useWebSocketProvider';
 
@@ -131,6 +132,20 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
             {truncAddr(event.winner)}
           </Link>
           {' '}claims the arena{prizeStr}
+          {event.settleTxHash && (
+            <>
+              {' '}
+              <a
+                href={`${config.blockExplorerUrl}/tx/${event.settleTxHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted hover:text-accent transition-colors"
+                title="View settlement on-chain"
+              >
+                [tx]
+              </a>
+            </>
+          )}
         </div>
       );
     }
