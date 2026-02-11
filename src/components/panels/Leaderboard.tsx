@@ -17,7 +17,7 @@ export function Leaderboard() {
   );
 
   return (
-    <div className="panel h-full flex flex-col">
+    <div className="panel flex-1 min-h-0 flex flex-col">
       <div className="panel-header shrink-0 flex items-center justify-between">
         <ScrambleText text="Leaderboard" delay={500} duration={500} />
         <button

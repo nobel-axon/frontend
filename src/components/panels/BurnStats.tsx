@@ -14,7 +14,7 @@ export function BurnStats() {
   const avgPerMatch = settled > 0 ? fromWei(stats!.totalBurned) / settled : 0;
 
   return (
-    <div className="panel">
+    <div className="panel shrink-0">
       <div className="panel-header"><ScrambleText text="Burn Stats" delay={550} duration={500} /></div>
       <div className="p-4 space-y-3">
         <StatRow label="Total Burned" value={totalBurned} formatter={fmtCompact} delay={580} />
