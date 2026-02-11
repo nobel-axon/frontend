@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { useStats } from '../hooks/useStats';
+import { useBountyStats } from '../hooks/useBountyStats';
 import { fromWei, compact } from '../utils/format';
 import { AnimatedNumber } from './AnimatedNumber';
 import { ScrambleText } from './ScrambleText';
@@ -21,17 +22,19 @@ function StatCard({ label, value, formatter, delay = 0 }: { label: string; value
 
 export function Dashboard() {
   const { stats } = useStats();
+  const { bountyStats } = useBountyStats();
   const fmtInt = useCallback((n: number) => String(Math.round(n)), []);
   const fmtCompact = useCallback((n: number) => compact(n), []);
 
   return (
     <div className="h-full flex flex-col gap-3">
       {/* Stat Cards Row - fixed height */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 shrink-0">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 shrink-0">
         <StatCard label="Total Matches" value={stats ? stats.totalMatches : null} formatter={fmtInt} delay={200} />
         <StatCard label="MON Earned" value={stats ? fromWei(stats.totalEarnings) : null} formatter={fmtCompact} delay={250} />
         <StatCard label="NEURON Burned" value={stats ? fromWei(stats.totalBurned) : null} formatter={fmtCompact} delay={300} />
         <StatCard label="Total Agents" value={stats ? stats.totalAgents : null} formatter={fmtInt} delay={350} />
+        <StatCard label="Active Bounties" value={bountyStats ? bountyStats.activeBounties : null} formatter={fmtInt} delay={400} />
       </div>
 
       {/* Main Content */}

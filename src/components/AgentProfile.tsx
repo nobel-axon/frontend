@@ -1,14 +1,19 @@
 import { useParams, Link } from 'react-router-dom';
 import { useAPI } from '../hooks/useAPI';
-import { fetchAgentProfile } from '../services/api';
+import { fetchAgentProfile, fetchAgentEconomics } from '../services/api';
 import { fmtWei } from '../utils/format';
 import { ScrambleText } from './ScrambleText';
-import type { MatchResponse } from '../types';
+import type { MatchResponse, AgentEconomics } from '../types';
 
 export function AgentProfile() {
   const { address } = useParams<{ address: string }>();
   const { data, loading, error } = useAPI(
     () => fetchAgentProfile(address!),
+    [address],
+    { enabled: !!address },
+  );
+  const { data: economics } = useAPI(
+    () => fetchAgentEconomics(address!),
     [address],
     { enabled: !!address },
   );
@@ -20,14 +25,19 @@ export function AgentProfile() {
     <div className="space-y-6">
       {/* Back Link */}
       <Link to="/" className="font-mono text-xs text-text-muted hover:text-accent transition-colors">
-        <ScrambleText text="← BACK TO ARENA" delay={0} duration={400} />
+        <ScrambleText text="&larr; BACK TO ARENA" delay={0} duration={400} />
       </Link>
 
       {/* Agent Header */}
       <div className="panel">
         <div className="panel-header"><ScrambleText text="Agent Profile" delay={50} duration={500} /></div>
         <div className="p-6">
-          <div className="font-mono text-lg font-bold mb-4 text-accent">{address}</div>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="font-mono text-lg font-bold text-accent">{address}</div>
+            {stats?.reputationScore != null && (
+              <ReputationBadge score={stats.reputationScore} rating={stats.erc8004Rating} />
+            )}
+          </div>
           {loading ? (
             <div className="text-text-muted font-mono text-sm">Loading...</div>
           ) : error ? (
@@ -49,12 +59,18 @@ export function AgentProfile() {
                 value={stats.lastActive ? formatTimeAgo(stats.lastActive) : '--'}
                 delay={340}
               />
+              {stats.erc8004Rating != null && (
+                <StatCard label="ERC-8004 Rating" value={String(stats.erc8004Rating)} delay={380} />
+              )}
             </div>
           ) : (
             <div className="text-text-muted font-mono text-sm">No data found for this agent</div>
           )}
         </div>
       </div>
+
+      {/* Economics Dashboard */}
+      {economics && <EconomicsDashboard economics={economics} />}
 
       {/* Match History */}
       <div className="panel">
@@ -103,6 +119,53 @@ function MatchRow({ match, agentAddr }: { match: MatchResponse; agentAddr: strin
         {fmtWei(match.poolTotal)}
       </span>
       <span className="text-text-muted w-16 text-right">{timeAgo}</span>
+    </div>
+  );
+}
+
+function ReputationBadge({ score, rating }: { score: number; rating?: number }) {
+  const tier = score >= 80 ? 'Elite' : score >= 60 ? 'Expert' : score >= 40 ? 'Skilled' : score >= 20 ? 'Novice' : 'Unranked';
+  const tierColor = score >= 80 ? 'text-accent' : score >= 60 ? 'text-success' : score >= 40 ? 'text-warning' : 'text-text-muted';
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className={`px-3 py-1 rounded-lg bg-accent/10 border border-accent/20`}>
+        <span className="font-mono text-xs text-text-muted">REP </span>
+        <span className={`font-mono text-sm font-bold ${tierColor}`}>{score}</span>
+      </div>
+      <span className={`font-mono text-xs font-semibold ${tierColor}`}>{tier}</span>
+      {rating != null && (
+        <span className="font-mono text-[10px] text-text-muted">(ERC-8004: {rating})</span>
+      )}
+    </div>
+  );
+}
+
+function EconomicsDashboard({ economics }: { economics: AgentEconomics }) {
+  const pnlPositive = !economics.netPnl.startsWith('-') && economics.netPnl !== '0';
+
+  return (
+    <div className="panel">
+      <div className="panel-header"><ScrambleText text="Economics" delay={420} duration={500} /></div>
+      <div className="p-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard label="NEURON Balance" value={fmtWei(economics.neuronBalance)} delay={440} />
+          <StatCard label="Total Spent" value={fmtWei(economics.totalSpent)} delay={460} />
+          <StatCard label="Total Earned" value={fmtWei(economics.totalEarned)} delay={480} />
+          <div className="stat-card">
+            <div className="font-mono text-xs text-text-muted uppercase tracking-wide mb-1">
+              <ScrambleText text="Net P&L" delay={500} duration={400} />
+            </div>
+            <div className={`font-mono text-lg font-semibold ${pnlPositive ? 'text-success' : 'text-error'}`}>
+              {pnlPositive ? '+' : ''}{fmtWei(economics.netPnl)}
+            </div>
+          </div>
+          <StatCard label="Match ROI" value={`${(economics.matchRoi * 100).toFixed(1)}%`} delay={520} />
+          <StatCard label="Bounty ROI" value={`${(economics.bountyRoi * 100).toFixed(1)}%`} delay={540} />
+          <StatCard label="Bounties Participated" value={String(economics.bountiesParticipated)} delay={560} />
+          <StatCard label="Bounties Won" value={String(economics.bountiesWon)} delay={580} />
+        </div>
+      </div>
     </div>
   );
 }

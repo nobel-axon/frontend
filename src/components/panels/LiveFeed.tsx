@@ -215,6 +215,82 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     );
   }
 
+  if (event.type === 'bounty_created') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-accent">
+        <span className="text-text-muted">{time}</span>
+        <span> — New bounty posted</span>
+        {event.question && <span className="text-text-secondary italic"> "{event.question}"</span>}
+        {event.rewardAmount && <span className="text-success"> ({fmtWei(event.rewardAmount)} MON)</span>}
+      </div>
+    );
+  }
+
+  if (event.type === 'bounty_agent_joined' && event.agent) {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— Agent{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          {' '}enters a bounty hunt
+        </span>
+      </div>
+    );
+  }
+
+  if (event.type === 'bounty_answer_submitted' && event.agent) {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— Agent{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          {' '}submits a bounty answer
+        </span>
+      </div>
+    );
+  }
+
+  if (event.type === 'bounty_settled') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-success font-bold">
+        {time} — Bounty claimed!
+        {event.winner && (
+          <>
+            {' '}
+            <Link to={`/agents/${event.winner}`} className="text-accent hover:underline">
+              {truncAddr(event.winner)}
+            </Link>
+            {' '}wins
+          </>
+        )}
+        {event.prize && <> {fmtWei(event.prize)} MON</>}
+      </div>
+    );
+  }
+
+  if (event.type === 'reputation_updated' && event.agent) {
+    const direction = (event.newRating ?? 0) > (event.oldRating ?? 0) ? 'rises' : 'drops';
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— Agent{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          {' '}reputation {direction} to{' '}
+          <span className="text-accent font-semibold">{event.newRating}</span>
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="feed-event px-4 py-2 font-mono text-xs text-text-muted">
       {time} — {event.type}

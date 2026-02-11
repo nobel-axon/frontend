@@ -55,6 +55,9 @@ function Header() {
             <NavLink to="/" active={location.pathname === '/'}>
               <ScrambleText text="ARENA" delay={50} duration={400} />
             </NavLink>
+            <NavLink to="/bounties" active={location.pathname.startsWith('/bounties')}>
+              <ScrambleText text="BOUNTIES" delay={75} duration={400} />
+            </NavLink>
             <NavLink to="/how-to-join" active={location.pathname === '/how-to-join'}>
               <ScrambleText text="HOW TO JOIN" delay={100} duration={400} />
             </NavLink>

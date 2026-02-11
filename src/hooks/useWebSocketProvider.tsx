@@ -14,7 +14,12 @@ type EventType =
   | 'answer_revealed'
   | 'match_cancelled'
   | 'personalities_assigned'
-  | 'burn';
+  | 'burn'
+  | 'bounty_created'
+  | 'bounty_agent_joined'
+  | 'bounty_answer_submitted'
+  | 'bounty_settled'
+  | 'reputation_updated';
 
 export interface FeedEvent {
   id: string;
@@ -34,6 +39,12 @@ export interface FeedEvent {
   reason?: string;
   playerCount?: number;
   entryFee?: string;
+  // Bounty fields
+  bountyId?: number;
+  rewardAmount?: string;
+  minRating?: number;
+  newRating?: number;
+  oldRating?: number;
 }
 
 interface WebSocketContextValue {
@@ -203,6 +214,57 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         timestamp: now,
         matchId: data.matchId as number,
         reason: data.reason as string,
+      };
+
+    case 'bounty_created':
+      return {
+        id,
+        type: 'bounty_created',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        question: data.questionText as string,
+        category: data.category as string,
+        rewardAmount: data.rewardAmount as string,
+        minRating: data.minRating as number,
+        agent: data.creatorAddr as string,
+      };
+
+    case 'bounty_agent_joined':
+      return {
+        id,
+        type: 'bounty_agent_joined',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        agent: data.agentAddr as string,
+      };
+
+    case 'bounty_answer_submitted':
+      return {
+        id,
+        type: 'bounty_answer_submitted',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        agent: data.agentAddr as string,
+      };
+
+    case 'bounty_settled':
+      return {
+        id,
+        type: 'bounty_settled',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        winner: data.winnerAddr as string,
+        prize: data.rewardAmount as string,
+      };
+
+    case 'reputation_updated':
+      return {
+        id,
+        type: 'reputation_updated',
+        timestamp: now,
+        agent: data.agentAddr as string,
+        oldRating: data.oldRating as number,
+        newRating: data.newRating as number,
       };
 
     default:
