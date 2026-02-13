@@ -121,7 +121,7 @@ export interface CommentaryResponse {
 }
 
 // Bounty types
-export type BountyPhase = 'active' | 'answer_period' | 'settled' | 'expired' | 'cancelled';
+export type BountyPhase = 'open' | 'active' | 'settled' | 'refunded';
 
 export interface BountyResponse {
   bountyId: number;
@@ -131,21 +131,33 @@ export interface BountyResponse {
   category: string;
   difficulty: number;
   rewardAmount: string;
-  minRating: number;
+  baseAnswerFee?: string;
+  entryFee?: string;
+  minRating: string;
+  maxParticipants: number;
   agentCount: number;
   answerCount: number;
   winnerAddr?: string;
   winnerAnswer?: string;
+  settleTxHash?: string;
   createdAt: string;
-  expiresAt: string;
+  expiresAt?: string;
   settledAt?: string;
 }
 
 export interface BountyAnswer {
+  id: number;
+  bountyId: number;
   agentAddr: string;
   answerText: string;
+  reasoning?: string;
   totalScore?: number;
+  agreement?: string;
+  evaluations?: unknown;
+  attemptNumber: number;
+  neuronBurned: string;
   submittedAt: string;
+  evaluatedAt?: string;
 }
 
 export interface BountyDetailResponse {

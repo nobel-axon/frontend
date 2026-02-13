@@ -320,3 +320,12 @@ body::after {
 .animate-slide-in-right {
   animation: slide-in-right 200ms ease-out both;
 }
+
+@keyframes border-pulse {
+  0%, 100% { border-color: var(--color-accent); }
+  50% { border-color: transparent; }
+}
+
+.animate-border-pulse {
+  animation: border-pulse 2s ease-in-out infinite;
+}

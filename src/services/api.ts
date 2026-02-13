@@ -13,6 +13,7 @@ import type {
 } from '../types';
 
 import { config } from '../config';
+import { mockFetchBounties, mockFetchBountyDetail, mockFetchBountyStats } from './mockBounties';
 
 const BASE = config.apiUrl;
 
@@ -86,6 +87,7 @@ export function fetchAgentHistory(
 export function fetchBounties(
   filters: { phase?: string; category?: string; limit?: number; offset?: number } = {},
 ): Promise<{ bounties: BountyResponse[]; total: number; limit: number; offset: number }> {
+  if (config.useMockBounties) return mockFetchBounties(filters);
   const params = new URLSearchParams();
   if (filters.phase) params.set('phase', filters.phase);
   if (filters.category) params.set('category', filters.category);
@@ -96,13 +98,39 @@ export function fetchBounties(
 }
 
 export function fetchBountyDetail(bountyId: number): Promise<BountyDetailResponse> {
+  if (config.useMockBounties) return mockFetchBountyDetail(bountyId);
   return get<BountyDetailResponse>(`/api/bounties/${bountyId}`);
 }
 
 export function fetchBountyStats(): Promise<BountyStatsResponse> {
+  if (config.useMockBounties) return mockFetchBountyStats();
   return get<BountyStatsResponse>('/api/bounties/stats');
 }
 
 export function fetchAgentEconomics(address: string): Promise<AgentEconomics> {
   return get<AgentEconomics>(`/api/agent/${address}/economics`);
+}
+
+export interface CreateBountyPayload {
+  questionText: string;
+  category: string;
+  difficulty: number;
+  entryFee: string;
+  deadline: string;
+  maxParticipants: number;
+  minRating: string;
+  creatorAddress: string;
+}
+
+export async function postBounty(payload: CreateBountyPayload): Promise<{ status: string; bounty: BountyResponse }> {
+  const res = await fetch(`${BASE}/api/bounties`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error((body as { error?: string }).error || `${res.status} ${res.statusText}`);
+  }
+  return res.json();
 }

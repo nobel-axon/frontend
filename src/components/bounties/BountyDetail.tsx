@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useAPI } from '../../hooks/useAPI';
 import { fetchBountyDetail } from '../../services/api';
 import { fmtWei } from '../../utils/format';
+import { config } from '../../config';
 import { ScrambleText } from '../ScrambleText';
 import { BountyStatusBadge } from './BountyStatusBadge';
 import type { BountyAnswer } from '../../types';
@@ -34,40 +35,60 @@ export function BountyDetail() {
           <div className="panel">
             <div className="panel-header flex items-center justify-between">
               <ScrambleText text={`Bounty #${bounty.bountyId}`} delay={50} duration={500} />
-              <BountyStatusBadge phase={bounty.phase} />
+              <BountyStatusBadge phase={bounty.phase} expiresAt={bounty.expiresAt} />
             </div>
             <div className="p-6 space-y-4">
               <p className="font-mono text-base text-text leading-relaxed">{bounty.questionText}</p>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <MetaCard label="Reward" value={`${fmtWei(bounty.rewardAmount)} MON`} delay={100} />
+                <MetaCard label="Reward" value={`${fmtWei(bounty.rewardAmount)} NEURON`} delay={100} />
                 <MetaCard label="Category" value={bounty.category} delay={140} />
-                <MetaCard label="Difficulty" value={`${bounty.difficulty}/5`} delay={180} />
-                <MetaCard label="Min Rating" value={String(bounty.minRating)} delay={220} />
+                <MetaCard label="Min Rating" value={bounty.minRating} delay={180} />
+                {bounty.baseAnswerFee && (
+                  <MetaCard label="Answer Fee" value={`${fmtWei(bounty.baseAnswerFee)} NEURON`} delay={240} />
+                )}
                 <MetaCard label="Agents" value={String(bounty.agentCount)} delay={260} />
                 <MetaCard label="Answers" value={String(bounty.answerCount)} delay={300} />
                 <MetaCard label="Created" value={formatTimeAgo(bounty.createdAt)} delay={340} />
-                <MetaCard label="Expires" value={formatTimeAgo(bounty.expiresAt)} delay={380} />
+                {bounty.expiresAt && (
+                  <MetaCard label="Expires" value={formatTimeAgo(bounty.expiresAt)} delay={380} />
+                )}
               </div>
 
-              {bounty.winnerAddr && (
-                <div className="mt-4 p-3 rounded-lg bg-success/5 border border-success/20">
-                  <div className="font-mono text-xs text-text-muted mb-1">Winner</div>
-                  <Link
-                    to={`/agents/${bounty.winnerAddr}`}
-                    className="font-mono text-sm font-bold text-success hover:underline"
-                  >
-                    {bounty.winnerAddr}
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Answers */}
           <div className="panel">
-            <div className="panel-header">
+            <div className="panel-header flex items-center justify-between">
               <ScrambleText text={`Answers (${answers.length})`} delay={400} duration={500} />
+              {bounty.phase === 'settled' && (
+                <span className="font-mono text-[10px] text-text-muted flex items-center gap-1.5">
+                  {!bounty.winnerAddr ? (
+                    'Reward split by score'
+                  ) : bounty.winnerAddr ? (
+                    <>
+                      Won by{' '}
+                      <Link to={`/agents/${bounty.winnerAddr}`} className="text-accent hover:underline">
+                        {bounty.winnerAddr.slice(0, 6)}...{bounty.winnerAddr.slice(-4)}
+                      </Link>
+                    </>
+                  ) : null}
+                  {bounty.settleTxHash && (
+                    <a
+                      href={`${config.blockExplorerUrl}/tx/${bounty.settleTxHash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-accent transition-colors"
+                      title="View settlement tx"
+                    >
+                      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M6 3H3v10h10v-3M9 3h4v4M9 7l4-4" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </a>
+                  )}
+                </span>
+              )}
             </div>
             <div className="divide-y divide-border">
               {answers.length === 0 ? (
@@ -75,11 +96,16 @@ export function BountyDetail() {
                   No answers submitted yet
                 </div>
               ) : (
-                answers.map((answer, i) => (
+                answers.map((answer) => (
                   <AnswerRow
-                    key={answer.agentAddr + i}
+                    key={answer.id}
                     answer={answer}
                     isWinner={answer.agentAddr === bounty.winnerAddr}
+                    isProportional={!bounty.winnerAddr}
+                    totalScore={!bounty.winnerAddr
+                      ? answers.reduce((sum, a) => sum + (a.totalScore ?? 0), 0)
+                      : undefined
+                    }
                   />
                 ))
               )}
@@ -104,11 +130,19 @@ function MetaCard({ label, value, delay = 0 }: { label: string; value: string; d
   );
 }
 
-function AnswerRow({ answer, isWinner }: { answer: BountyAnswer; isWinner: boolean }) {
+function AnswerRow({ answer, isWinner, isProportional, totalScore }: {
+  answer: BountyAnswer;
+  isWinner: boolean;
+  isProportional?: boolean;
+  totalScore?: number;
+}) {
   const truncAddr = `${answer.agentAddr.slice(0, 6)}...${answer.agentAddr.slice(-4)}`;
+  const sharePercent = isProportional && totalScore && answer.totalScore != null
+    ? Math.round((answer.totalScore / totalScore) * 100)
+    : undefined;
 
   return (
-    <div className={`px-4 py-3 font-mono text-sm hover:bg-surface-hover transition-colors ${isWinner ? 'bg-success/5' : ''}`}>
+    <div className={`px-4 py-3 font-mono text-sm hover:bg-surface-hover transition-colors ${isWinner ? 'bg-accent/5' : ''}`}>
       <div className="flex items-center gap-3 mb-1">
         <Link
           to={`/agents/${answer.agentAddr}`}
@@ -119,8 +153,11 @@ function AnswerRow({ answer, isWinner }: { answer: BountyAnswer; isWinner: boole
         {answer.totalScore != null && (
           <span className="text-text-muted text-xs">Score: {answer.totalScore}</span>
         )}
-        {isWinner && (
-          <span className="text-success text-xs font-bold">WINNER</span>
+        {sharePercent != null && (
+          <span className="text-accent text-xs">{sharePercent}% share</span>
+        )}
+        {isWinner && !isProportional && (
+          <span className="text-accent text-xs font-bold">WINNER</span>
         )}
         <span className="ml-auto text-text-muted text-xs">{formatTimeAgo(answer.submittedAt)}</span>
       </div>

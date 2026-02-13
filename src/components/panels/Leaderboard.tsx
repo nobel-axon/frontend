@@ -59,10 +59,8 @@ export function Leaderboard() {
           <div className="px-3 py-1.5 flex items-center gap-2 font-mono text-[10px] text-text-muted sticky top-0 bg-surface">
             <div className="w-5"><ScrambleText text="#" delay={530} duration={400} /></div>
             <div className="flex-1"><ScrambleText text="Address" delay={530} duration={400} /></div>
-            <div className="w-8 text-right"><ScrambleText text="Rep" delay={530} duration={400} /></div>
+            <div className="w-10 text-right"><ScrambleText text="Rep" delay={530} duration={400} /></div>
             <div className="w-16 text-right"><ScrambleText text="MON Earned" delay={530} duration={400} /></div>
-            <div className="w-8 text-right"><ScrambleText text="Wins" delay={530} duration={400} /></div>
-            <div className="w-12 text-right"><ScrambleText text="Matches" delay={530} duration={400} /></div>
             <div className="w-10 text-right"><ScrambleText text="Win %" delay={530} duration={400} /></div>
           </div>
           {entries.map((entry, i) => (
@@ -81,8 +79,6 @@ export function Leaderboard() {
 
 function LeaderboardRow({ entry, rank }: { entry: LeaderboardEntry; rank: number }) {
   const truncAddr = `${entry.agentAddr.slice(0, 6)}...${entry.agentAddr.slice(-4)}`;
-  const winPct = (entry.winRate * 100).toFixed(0);
-
   return (
     <div className="px-3 py-2 flex items-center gap-2 font-mono text-xs hover:bg-surface-hover transition-colors">
       <div className="w-5 text-text-muted">{rank}</div>
@@ -92,11 +88,9 @@ function LeaderboardRow({ entry, rank }: { entry: LeaderboardEntry; rank: number
       >
         {truncAddr}
       </Link>
-      <div className="w-8 text-right text-accent-600">{entry.reputationScore ?? '--'}</div>
+      <div className="w-10 text-right text-accent-600">{entry.reputationScore ?? '--'}</div>
       <div className="w-16 text-right text-accent">{fmtWei(entry.totalEarnedMon)}</div>
-      <div className="w-8 text-right text-success">{entry.matchesWon}</div>
-      <div className="w-12 text-right text-text-muted">{entry.matchesPlayed}</div>
-      <div className="w-10 text-right text-text-secondary">{winPct}%</div>
+      <div className="w-10 text-right text-text-secondary">{(entry.winRate * 100).toFixed(0)}%</div>
     </div>
   );
 }

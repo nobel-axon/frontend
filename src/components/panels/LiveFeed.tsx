@@ -221,7 +221,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
         <span className="text-text-muted">{time}</span>
         <span> — New bounty posted</span>
         {event.question && <span className="text-text-secondary italic"> "{event.question}"</span>}
-        {event.rewardAmount && <span className="text-success"> ({fmtWei(event.rewardAmount)} MON)</span>}
+        {event.rewardAmount && <span className="text-success"> ({fmtWei(event.rewardAmount)} NEURON)</span>}
       </div>
     );
   }
@@ -256,6 +256,22 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     );
   }
 
+  if (event.type === 'bounty_answer_evaluated' && event.agent) {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary">
+          {' '}— Bounty answer by{' '}
+          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
+            {truncAddr(event.agent)}
+          </Link>
+          {' '}evaluated
+          {event.newRating != null && <> — score <span className="text-accent font-semibold">{event.newRating}</span>/30</>}
+        </span>
+      </div>
+    );
+  }
+
   if (event.type === 'bounty_settled') {
     return (
       <div className="feed-event px-4 py-2 font-mono text-xs text-success font-bold">
@@ -269,13 +285,64 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
             {' '}wins
           </>
         )}
-        {event.prize && <> {fmtWei(event.prize)} MON</>}
+        {event.prize && <> {fmtWei(event.prize)} NEURON</>}
+      </div>
+    );
+  }
+
+  if (event.type === 'winner_reward_claimed') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-success">
+        <span className="text-text-muted">{time}</span>
+        <span> — Winner claims bounty reward</span>
+        {event.winner && (
+          <>
+            {' '}
+            <Link to={`/agents/${event.winner}`} className="text-accent hover:underline">
+              {truncAddr(event.winner)}
+            </Link>
+          </>
+        )}
+        {event.amount && <span className="text-success"> ({fmtWei(event.amount)} NEURON)</span>}
+      </div>
+    );
+  }
+
+  if (event.type === 'proportional_claimed') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary"> — Agent claims proportional bounty share</span>
+        {event.agent && (
+          <>
+            {' '}
+            <Link to={`/agents/${event.agent}`} className="text-accent hover:underline">
+              {truncAddr(event.agent)}
+            </Link>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (event.type === 'refund_claimed') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs">
+        <span className="text-text-muted">{time}</span>
+        <span className="text-text-secondary"> — Bounty refund claimed</span>
+        {event.creator && (
+          <>
+            {' '}by{' '}
+            <Link to={`/agents/${event.creator}`} className="text-accent hover:underline">
+              {truncAddr(event.creator)}
+            </Link>
+          </>
+        )}
       </div>
     );
   }
 
   if (event.type === 'reputation_updated' && event.agent) {
-    const direction = (event.newRating ?? 0) > (event.oldRating ?? 0) ? 'rises' : 'drops';
     return (
       <div className="feed-event px-4 py-2 font-mono text-xs">
         <span className="text-text-muted">{time}</span>
@@ -284,7 +351,7 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
           <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
             {truncAddr(event.agent)}
           </Link>
-          {' '}reputation {direction} to{' '}
+          {' '}reputation updated to{' '}
           <span className="text-accent font-semibold">{event.newRating}</span>
         </span>
       </div>

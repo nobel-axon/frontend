@@ -18,7 +18,11 @@ type EventType =
   | 'bounty_created'
   | 'bounty_agent_joined'
   | 'bounty_answer_submitted'
+  | 'bounty_answer_evaluated'
   | 'bounty_settled'
+  | 'winner_reward_claimed'
+  | 'proportional_claimed'
+  | 'refund_claimed'
   | 'reputation_updated';
 
 export interface FeedEvent {
@@ -44,7 +48,8 @@ export interface FeedEvent {
   rewardAmount?: string;
   minRating?: number;
   newRating?: number;
-  oldRating?: number;
+  amount?: string;
+  creator?: string;
 }
 
 interface WebSocketContextValue {
@@ -247,6 +252,16 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         agent: data.agentAddr as string,
       };
 
+    case 'bounty_answer_evaluated':
+      return {
+        id,
+        type: 'bounty_answer_evaluated',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        agent: data.agentAddr as string,
+        newRating: data.totalScore as number,
+      };
+
     case 'bounty_settled':
       return {
         id,
@@ -257,14 +272,43 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         prize: data.rewardAmount as string,
       };
 
+    case 'winner_reward_claimed':
+      return {
+        id,
+        type: 'winner_reward_claimed',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        winner: data.winner as string,
+        amount: data.amount as string,
+      };
+
+    case 'proportional_claimed':
+      return {
+        id,
+        type: 'proportional_claimed',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        agent: data.agent as string,
+        amount: data.amount as string,
+      };
+
+    case 'refund_claimed':
+      return {
+        id,
+        type: 'refund_claimed',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        creator: data.creator as string,
+        amount: data.amount as string,
+      };
+
     case 'reputation_updated':
       return {
         id,
         type: 'reputation_updated',
         timestamp: now,
         agent: data.agentAddr as string,
-        oldRating: data.oldRating as number,
-        newRating: data.newRating as number,
+        newRating: data.score as number,
       };
 
     default:

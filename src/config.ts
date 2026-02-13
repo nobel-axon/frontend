@@ -41,4 +41,7 @@ export const config = {
     protocolFee: '5%',
     minPlayers: 2,
   },
+
+  // Mock data (for development before backend is live)
+  useMockBounties: import.meta.env.VITE_MOCK_BOUNTIES === 'true',
 } as const;
