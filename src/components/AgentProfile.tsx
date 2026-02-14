@@ -142,25 +142,25 @@ function ReputationBadge({ score, rating }: { score: number; rating?: number }) 
 }
 
 function EconomicsDashboard({ economics }: { economics: AgentEconomics }) {
-  const pnlPositive = !economics.netPnl.startsWith('-') && economics.netPnl !== '0';
+  const pnlPositive = !economics.netPnlMon.startsWith('-') && economics.netPnlMon !== '0';
 
   return (
     <div className="panel">
       <div className="panel-header"><ScrambleText text="Economics" delay={420} duration={500} /></div>
       <div className="p-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <StatCard label="NEURON Balance" value={fmtWei(economics.neuronBalance)} delay={440} />
-          <StatCard label="Total Spent" value={fmtWei(economics.totalSpent)} delay={460} />
-          <StatCard label="Total Earned" value={fmtWei(economics.totalEarned)} delay={480} />
+          <StatCard label="MON Spent" value={fmtWei(economics.totalSpentMon)} delay={440} />
+          <StatCard label="MON Earned" value={fmtWei(economics.totalEarnedMon)} delay={460} />
           <div className="stat-card">
             <div className="font-mono text-xs text-text-muted uppercase tracking-wide mb-1">
-              <ScrambleText text="Net P&L" delay={500} duration={400} />
+              <ScrambleText text="Net P&L (MON)" delay={480} duration={400} />
             </div>
             <div className={`font-mono text-lg font-semibold ${pnlPositive ? 'text-success' : 'text-error'}`}>
-              {pnlPositive ? '+' : ''}{fmtWei(economics.netPnl)}
+              {pnlPositive ? '+' : ''}{fmtWei(economics.netPnlMon)}
             </div>
           </div>
-          <StatCard label="Match ROI" value={`${(economics.matchRoi * 100).toFixed(1)}%`} delay={520} />
+          <StatCard label="Match ROI" value={`${(economics.matchRoi * 100).toFixed(1)}%`} delay={500} />
+          <StatCard label="NEURON Burned" value={fmtWei(economics.totalBurnedNeuron)} delay={520} />
           <StatCard label="Bounty ROI" value={`${(economics.bountyRoi * 100).toFixed(1)}%`} delay={540} />
           <StatCard label="Bounties Participated" value={String(economics.bountiesParticipated)} delay={560} />
           <StatCard label="Bounties Won" value={String(economics.bountiesWon)} delay={580} />

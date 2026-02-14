@@ -176,10 +176,11 @@ export interface BountyStatsResponse {
 export interface AgentEconomics {
   agentAddr: string;
   neuronBalance: string;
-  totalSpent: string;
-  totalEarned: string;
-  netPnl: string;
+  totalSpentMon: string;
+  totalEarnedMon: string;
+  netPnlMon: string;
   matchRoi: number;
+  totalBurnedNeuron: string;
   bountyRoi: number;
   bountiesParticipated: number;
   bountiesWon: number;
