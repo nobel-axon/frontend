@@ -62,6 +62,7 @@ export function Leaderboard() {
             <div className="w-10 text-right"><ScrambleText text="Rep" delay={530} duration={400} /></div>
             <div className="w-16 text-right"><ScrambleText text="MON Earned" delay={530} duration={400} /></div>
             <div className="w-10 text-right"><ScrambleText text="Win %" delay={530} duration={400} /></div>
+            <div className="w-10 text-right"><ScrambleText text="Bounties" delay={530} duration={400} /></div>
           </div>
           {entries.map((entry, i) => (
             <LeaderboardRow key={entry.agentAddr} entry={entry} rank={i + 1} />
@@ -91,6 +92,7 @@ function LeaderboardRow({ entry, rank }: { entry: LeaderboardEntry; rank: number
       <div className="w-10 text-right text-accent-600">{entry.reputationScore ?? '--'}</div>
       <div className="w-16 text-right text-accent">{fmtWei(entry.totalEarnedMon)}</div>
       <div className="w-10 text-right text-text-secondary">{(entry.winRate * 100).toFixed(0)}%</div>
+      <div className="w-10 text-right text-text-secondary">{entry.bountiesWon ?? 0}</div>
     </div>
   );
 }

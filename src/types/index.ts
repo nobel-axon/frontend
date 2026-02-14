@@ -46,6 +46,8 @@ export interface LeaderboardEntry {
   totalEarnedMon: string;
   totalBurnedNeuron: string;
   reputationScore?: number;
+  bountiesPlayed?: number;
+  bountiesWon?: number;
 }
 
 export interface AgentStatsResponse {

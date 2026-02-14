@@ -29,9 +29,9 @@ export function BountyCard({ bounty }: { bounty: BountyResponse }) {
   return (
     <Link
       to={`/bounties/${bounty.bountyId}`}
-      className={`block panel ${accentBorder(bounty.phase)} hover:border-accent-300 hover:shadow-md transition-all`}
+      className={`flex flex-col panel ${accentBorder(bounty.phase)} hover:border-accent-300 hover:shadow-md transition-all`}
     >
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 flex-1">
         {/* Header: badge + category + min rating | time/winner */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
