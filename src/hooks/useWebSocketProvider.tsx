@@ -23,6 +23,8 @@ type EventType =
   | 'winner_reward_claimed'
   | 'proportional_claimed'
   | 'refund_claimed'
+  | 'bounty_approved'
+  | 'bounty_rejected'
   | 'reputation_updated';
 
 export interface FeedEvent {
@@ -232,6 +234,29 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
         rewardAmount: data.rewardAmount as string,
         minRating: data.minRating as number,
         agent: data.creatorAddr as string,
+      };
+
+    case 'bounty_approved': {
+      const b = (data.bounty ?? data) as Record<string, unknown>;
+      return {
+        id,
+        type: 'bounty_approved',
+        timestamp: now,
+        bountyId: (data.bountyId ?? b.bountyId) as number,
+        question: b.questionText as string,
+        category: b.category as string,
+        rewardAmount: b.rewardAmount as string,
+        agent: b.creatorAddr as string,
+      };
+    }
+
+    case 'bounty_rejected':
+      return {
+        id,
+        type: 'bounty_rejected',
+        timestamp: now,
+        bountyId: data.bountyId as number,
+        reason: data.reason as string,
       };
 
     case 'bounty_agent_joined':

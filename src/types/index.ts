@@ -121,7 +121,7 @@ export interface CommentaryResponse {
 }
 
 // Bounty types
-export type BountyPhase = 'open' | 'active' | 'settled' | 'refunded';
+export type BountyPhase = 'pending' | 'open' | 'active' | 'settled' | 'rejected' | 'refunded';
 
 export interface BountyResponse {
   bountyId: number;

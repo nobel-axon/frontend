@@ -11,8 +11,12 @@ function accentBorder(phase: string) {
       return 'border-l-3 border-l-accent';
     case 'settled':
       return 'border-l-3 border-l-success';
+    case 'pending':
+      return 'border-l-3 border-l-yellow-400';
     case 'refunded':
       return 'border-l-3 border-l-orange-400';
+    case 'rejected':
+      return 'border-l-3 border-l-red-400';
     default:
       return '';
   }

@@ -154,25 +154,25 @@ function MatchCard({ match }: { match: MatchResponse }) {
       </p>
 
       {/* Footer: winner, prize, players */}
-      <div className="flex items-center gap-3 text-xs text-text-muted">
+      <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-xs text-text-muted">
         {truncatedWinner ? (
           <>
-            <span className="mr-1">&#127942;</span>
-            Player{' '}
-            <Link
-              to={`/agents/${match.winnerAddress}`}
-              className="hover:text-accent transition-colors"
-            >
-              {truncatedWinner}
-            </Link>
-            {' '}won from a <span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span> pool
-            {' · '}{match.playerCount} player{match.playerCount !== 1 ? 's' : ''}
+            <span className="flex items-center gap-1.5">
+              <span>&#127942;</span>
+              <Link
+                to={`/agents/${match.winnerAddress}`}
+                className="hover:text-accent transition-colors"
+              >
+                {truncatedWinner}
+              </Link>
+            </span>
+            <span><span className="text-accent font-semibold">{fmtWei(match.poolTotal)} MON</span> · {match.playerCount}p</span>
             {match.settleTxHash && (
               <a
                 href={`${config.blockExplorerUrl}/tx/${match.settleTxHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-text-muted hover:text-accent transition-colors ml-1"
+                className="text-text-muted hover:text-accent transition-colors"
                 title="View settlement on-chain"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 inline-block">
@@ -187,7 +187,7 @@ function MatchCard({ match }: { match: MatchResponse }) {
         )}
         {hasThread && (
           <span className="ml-auto px-2 py-0.5 rounded border border-accent/20 text-accent bg-accent/5 hover:bg-accent/10 transition-colors">
-            {expanded ? 'hide' : 'show answers \u203A'}
+            {expanded ? 'hide' : 'answers \u203A'}
           </span>
         )}
       </div>

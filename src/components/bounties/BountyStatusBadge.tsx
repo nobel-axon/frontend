@@ -1,7 +1,9 @@
 const PHASE_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  pending: { bg: 'bg-yellow-500/10', text: 'text-yellow-400', label: 'Pending' },
   open: { bg: 'bg-blue-500/10', text: 'text-blue-400', label: 'Open' },
   active: { bg: 'bg-success/10', text: 'text-success', label: 'Active' },
   settled: { bg: 'bg-accent/10', text: 'text-accent', label: 'Settled' },
+  rejected: { bg: 'bg-red-500/10', text: 'text-red-400', label: 'Rejected' },
   refunded: { bg: 'bg-orange-500/10', text: 'text-orange-400', label: 'Refunded' },
   expired: { bg: 'bg-text-muted/10', text: 'text-text-muted', label: 'Expired' },
 };

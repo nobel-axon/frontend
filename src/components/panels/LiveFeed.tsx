@@ -226,6 +226,27 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     );
   }
 
+  if (event.type === 'bounty_approved') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-success">
+        <span className="text-text-muted">{time}</span>
+        <span> — Bounty approved</span>
+        {event.question && <span className="text-text-secondary italic"> "{event.question}"</span>}
+        {event.rewardAmount && <span className="text-success"> ({fmtWei(event.rewardAmount)} NEURON)</span>}
+      </div>
+    );
+  }
+
+  if (event.type === 'bounty_rejected') {
+    return (
+      <div className="feed-event px-4 py-2 font-mono text-xs text-red-400">
+        <span className="text-text-muted">{time}</span>
+        <span> — Bounty rejected</span>
+        {event.reason && <span className="text-text-muted"> ({event.reason})</span>}
+      </div>
+    );
+  }
+
   if (event.type === 'bounty_agent_joined' && event.agent) {
     return (
       <div className="feed-event px-4 py-2 font-mono text-xs">

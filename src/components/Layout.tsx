@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { config } from '../config';
+import { MaintenanceBanner } from './MaintenanceBanner';
 import { OnboardingFlow } from './OnboardingFlow';
 import { ScrambleText } from './ScrambleText';
 
@@ -36,6 +37,7 @@ export function Layout({ children }: LayoutProps) {
         <Footer onTermsClick={() => reopenAs('terms')} />
       </div>
       <OnboardingFlow mode={onboardingMode} reopenKey={onboardingKey} />
+      {config.maintenanceMode && <MaintenanceBanner />}
     </div>
   );
 }
@@ -46,8 +48,8 @@ function Header() {
   return (
     <header className="px-4 md:px-6 py-3 shrink-0 space-y-2">
       {/* Row 1: Logo + Nav */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 md:gap-8">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 md:gap-0">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-8">
           <Link to="/" className="font-mono text-xl font-bold tracking-tight text-accent">
             <ScrambleText text="NOBEL" delay={0} duration={400} />
           </Link>
@@ -105,7 +107,7 @@ function NavLink({ to, children, active }: NavLinkProps) {
   return (
     <Link
       to={to}
-      className={`font-mono text-xs font-medium tracking-wide px-3 md:px-4 py-1.5 md:py-2 rounded-lg transition-all ${
+      className={`font-mono text-xs font-medium tracking-wide px-2 md:px-4 py-1 md:py-2 rounded-lg transition-all ${
         active
           ? 'bg-accent text-white shadow-sm'
           : 'text-text-muted hover:bg-accent-50 hover:text-accent'
@@ -130,13 +132,13 @@ function AddressSearch() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-2">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2 min-w-0">
       <input
         type="text"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search agent (0x...)"
-        className="flex-1 md:w-80 lg:w-96 pl-3 pr-3 py-1.5 text-sm bg-bg-alt border border-border rounded-lg
+        className="flex-1 min-w-0 md:w-80 lg:w-96 pl-3 pr-3 py-1.5 text-sm bg-bg-alt border border-border rounded-lg
           placeholder:text-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20
           transition-colors font-mono"
       />

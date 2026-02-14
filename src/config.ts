@@ -44,4 +44,7 @@ export const config = {
 
   // Mock data (for development before backend is live)
   useMockBounties: import.meta.env.VITE_MOCK_BOUNTIES === 'true',
+
+  // Maintenance mode — blocks all UI interaction
+  maintenanceMode: import.meta.env.VITE_MAINTENANCE_MODE === 'true',
 } as const;
