@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { useAPI } from '../../hooks/useAPI';
 import { fetchBountyDetail } from '../../services/api';
 import { fmtWei } from '../../utils/format';
@@ -8,10 +9,24 @@ import { ScrambleText } from '../ScrambleText';
 import { BountyStatusBadge } from './BountyStatusBadge';
 import type { BountyAnswer, JudgeResult } from '../../types';
 
-export function BountyDetail() {
+const BOUNTY_ARENA_ABI = [
+  {
+    name: 'pickWinner',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'bountyId', type: 'uint256' },
+      { name: 'winner', type: 'address' },
+    ],
+    outputs: [],
+  },
+] as const;
+
+export function BountyManageDetail() {
   const { id } = useParams<{ id: string }>();
   const bountyId = Number(id);
-  const { data, loading, error } = useAPI(
+  const { address } = useAccount();
+  const { data, loading, error, refetch } = useAPI(
     () => fetchBountyDetail(bountyId),
     [bountyId],
     { enabled: !isNaN(bountyId) },
@@ -20,10 +35,14 @@ export function BountyDetail() {
   const bounty = data?.bounty;
   const answers = data?.answers ?? [];
 
+  const isCreator = bounty && address && bounty.creatorAddr.toLowerCase() === address.toLowerCase();
+  const isExpired = bounty?.expiresAt ? new Date(bounty.expiresAt).getTime() < Date.now() : false;
+  const canPickWinner = isCreator && bounty?.phase === 'active' && !isExpired && !bounty.winnerAddr;
+
   return (
     <div className="space-y-6">
-      <Link to="/bounties" className="font-mono text-xs text-text-muted hover:text-accent transition-colors">
-        <ScrambleText text="&larr; BACK TO BOUNTIES" delay={0} duration={400} />
+      <Link to="/bounties/manage" className="font-mono text-xs text-text-muted hover:text-accent transition-colors">
+        <ScrambleText text="&larr; BACK TO MANAGEMENT" delay={0} duration={400} />
       </Link>
 
       {loading ? (
@@ -42,54 +61,33 @@ export function BountyDetail() {
               <p className="font-mono text-base text-text leading-relaxed">{bounty.questionText}</p>
 
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <MetaCard label="Reward" value={`${fmtWei(bounty.rewardAmount)} NEURON`} delay={100} />
-                <MetaCard label="Category" value={bounty.category} delay={140} />
-                <MetaCard label="Min Rating" value={bounty.minRating} delay={180} />
+                <MetaCard label="Reward" value={`${fmtWei(bounty.rewardAmount)} NEURON`} />
+                <MetaCard label="Category" value={bounty.category} />
+                <MetaCard label="Agents" value={String(bounty.agentCount)} />
+                <MetaCard label="Answers" value={String(bounty.answerCount)} />
+                <MetaCard label="Min Rating" value={bounty.minRating} />
                 {bounty.baseAnswerFee && (
-                  <MetaCard label="Answer Fee" value={`${fmtWei(bounty.baseAnswerFee)} NEURON`} delay={240} />
+                  <MetaCard label="Answer Fee" value={`${fmtWei(bounty.baseAnswerFee)} NEURON`} />
                 )}
-                <MetaCard label="Agents" value={String(bounty.agentCount)} delay={260} />
-                <MetaCard label="Answers" value={String(bounty.answerCount)} delay={300} />
-                <MetaCard label="Created" value={formatTimeAgo(bounty.createdAt)} delay={340} />
+                <MetaCard label="Created" value={formatTimeAgo(bounty.createdAt)} />
                 {bounty.expiresAt && (
-                  <MetaCard label="Expires" value={formatTimeRemaining(bounty.expiresAt)} delay={380} />
+                  <MetaCard label="Expires" value={formatTimeRemaining(bounty.expiresAt)} />
                 )}
               </div>
+
+              {canPickWinner && (
+                <div className="p-3 rounded-lg bg-accent/5 border border-accent/20 font-mono text-xs text-accent">
+                  You can pick a winner from the answers below. This will send the reward to the chosen agent.
+                </div>
+              )}
 
             </div>
           </div>
 
           {/* Answers */}
           <div className="panel">
-            <div className="panel-header flex items-center justify-between">
+            <div className="panel-header">
               <ScrambleText text={`Answers (${answers.length})`} delay={400} duration={500} />
-              {bounty.phase === 'settled' && (
-                <span className="font-mono text-[10px] text-text-muted flex items-center gap-1.5">
-                  {!bounty.winnerAddr ? (
-                    'Reward split by reputation'
-                  ) : bounty.winnerAddr ? (
-                    <>
-                      Won by{' '}
-                      <Link to={`/agents/${bounty.winnerAddr}`} className="text-accent hover:underline">
-                        {bounty.winnerAddr.slice(0, 6)}...{bounty.winnerAddr.slice(-4)}
-                      </Link>
-                    </>
-                  ) : null}
-                  {bounty.settleTxHash && (
-                    <a
-                      href={`${config.blockExplorerUrl}/tx/${bounty.settleTxHash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-accent transition-colors"
-                      title="View settlement tx"
-                    >
-                      <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                        <path d="M6 3H3v10h10v-3M9 3h4v4M9 7l4-4" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </a>
-                  )}
-                </span>
-              )}
             </div>
             <div className="divide-y divide-border">
               {answers.length === 0 ? (
@@ -98,15 +96,14 @@ export function BountyDetail() {
                 </div>
               ) : (
                 answers.map((answer) => (
-                  <AnswerRow
+                  <ManageAnswerRow
                     key={answer.id}
                     answer={answer}
+                    bountyId={bounty.bountyId}
+                    canPickWinner={!!canPickWinner}
                     isWinner={answer.agentAddr === bounty.winnerAddr}
-                    isProportional={!bounty.winnerAddr}
-                    totalScore={!bounty.winnerAddr
-                      ? answers.reduce((sum, a) => sum + (a.totalScore ?? 0), 0)
-                      : undefined
-                    }
+                    settleTxHash={bounty.settleTxHash}
+                    onSuccess={refetch}
                   />
                 ))
               )}
@@ -120,32 +117,76 @@ export function BountyDetail() {
   );
 }
 
-function MetaCard({ label, value, delay = 0 }: { label: string; value: string; delay?: number }) {
-  return (
-    <div className="stat-card">
-      <div className="font-mono text-xs text-text-muted uppercase tracking-wide mb-1">
-        <ScrambleText text={label} delay={delay} duration={400} />
-      </div>
-      <div className="font-mono text-sm font-semibold text-accent">{value}</div>
-    </div>
-  );
-}
-
 const ANSWER_PREVIEW_LENGTH = 300;
 
-function AnswerRow({ answer, isWinner, isProportional, totalScore }: {
+function ManageAnswerRow({ answer, bountyId, canPickWinner, isWinner, settleTxHash, onSuccess }: {
   answer: BountyAnswer;
+  bountyId: number;
+  canPickWinner: boolean;
   isWinner: boolean;
-  isProportional?: boolean;
-  totalScore?: number;
+  settleTxHash?: string;
+  onSuccess: () => void;
 }) {
+  const [showConfirm, setShowConfirm] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [showJudges, setShowJudges] = useState(false);
   const truncAddr = `${answer.agentAddr.slice(0, 6)}...${answer.agentAddr.slice(-4)}`;
-  const sharePercent = isProportional && totalScore && answer.totalScore != null
-    ? Math.round((answer.totalScore / totalScore) * 100)
-    : undefined;
   const isLong = answer.answerText.length > ANSWER_PREVIEW_LENGTH;
+
+  const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash: txHash });
+  const refetched = useRef(false);
+
+  useEffect(() => {
+    if (isSuccess && !refetched.current) {
+      refetched.current = true;
+      const timer = setTimeout(onSuccess, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isSuccess, onSuccess]);
+
+  const handlePickWinner = () => {
+    writeContract({
+      address: config.bountyArenaAddress,
+      abi: BOUNTY_ARENA_ABI,
+      functionName: 'pickWinner',
+      args: [BigInt(bountyId), answer.agentAddr as `0x${string}`],
+    });
+    setShowConfirm(false);
+  };
+
+  const winnerAction = canPickWinner && !isWinner ? (
+    isSuccess ? (
+      <span className="text-success text-xs font-bold whitespace-nowrap">Winner picked!</span>
+    ) : isConfirming ? (
+      <span className="text-accent text-xs animate-pulse whitespace-nowrap">Confirming...</span>
+    ) : isPending ? (
+      <span className="text-accent text-xs animate-pulse whitespace-nowrap">Confirm in wallet...</span>
+    ) : showConfirm ? (
+      <div className="flex items-center gap-1.5">
+        <button
+          onClick={handlePickWinner}
+          className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded bg-accent text-white hover:bg-accent-600 transition-colors whitespace-nowrap"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={() => { setShowConfirm(false); reset(); }}
+          className="font-mono text-[10px] px-2.5 py-0.5 rounded border border-border text-text-muted hover:text-text transition-colors whitespace-nowrap"
+        >
+          Cancel
+        </button>
+      </div>
+    ) : (
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded border border-accent text-accent hover:bg-accent hover:text-white transition-colors whitespace-nowrap"
+      >
+        Choose as Winner
+      </button>
+    )
+  ) : null;
+
   const displayText = expanded || !isLong
     ? answer.answerText
     : answer.answerText.slice(0, ANSWER_PREVIEW_LENGTH) + '...';
@@ -170,14 +211,29 @@ function AnswerRow({ answer, isWinner, isProportional, totalScore }: {
             </button>
           </>
         )}
-        {sharePercent != null && (
-          <span className="text-accent text-xs">{sharePercent}% share</span>
-        )}
-        {isWinner && !isProportional && (
-          <span className="text-accent text-xs font-bold">WINNER</span>
+        {isWinner && (
+          <>
+            <span className="text-accent text-xs font-bold">WINNER</span>
+            {settleTxHash && (
+              <a
+                href={`${config.blockExplorerUrl}/tx/${settleTxHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted hover:text-accent transition-colors"
+              >
+                <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M6 3H3v10h10v-3M9 3h4v4M9 7l4-4" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            )}
+          </>
         )}
         <span className="ml-auto text-text-muted text-xs">{formatTimeAgo(answer.submittedAt)}</span>
+        {winnerAction}
       </div>
+      {writeError && (
+        <p className="text-error text-[10px] mb-1">{writeError.message.slice(0, 80)}...</p>
+      )}
       <p className="text-text-secondary text-xs leading-relaxed whitespace-pre-wrap">{displayText}</p>
       {isLong && (
         <button
@@ -187,7 +243,11 @@ function AnswerRow({ answer, isWinner, isProportional, totalScore }: {
           {expanded ? 'Show less' : 'Show more'}
         </button>
       )}
+      {answer.reasoning && (
+        <p className="text-text-muted text-[10px] leading-relaxed mt-1 italic">Reasoning: {answer.reasoning}</p>
+      )}
 
+      {/* Judge Evaluations Modal */}
       {showJudges && (
         <JudgeEvaluationsModal
           evaluations={answer.evaluations}
@@ -226,6 +286,7 @@ function JudgeEvaluationsModal({ evaluations, totalScore, agreement, onClose }: 
         </div>
 
         <div className="p-6 space-y-4 overflow-y-auto">
+          {/* Summary */}
           <div className="flex items-center gap-4 pb-3 border-b border-border">
             <div>
               <div className="font-mono text-[10px] text-text-muted uppercase tracking-wide">Avg Score</div>
@@ -245,9 +306,11 @@ function JudgeEvaluationsModal({ evaluations, totalScore, agreement, onClose }: 
             )}
           </div>
 
+          {/* Per-judge rows */}
           {evaluations && evaluations.length > 0 ? (
             evaluations.map((jr, ji) => (
               <div key={ji} className="rounded-lg border border-border overflow-hidden">
+                {/* Judge header row */}
                 <div className="flex items-center gap-3 px-3 py-2 bg-bg-alt">
                   <span className="font-mono text-xs font-semibold text-text">Judge {ji + 1}</span>
                   <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
@@ -259,6 +322,7 @@ function JudgeEvaluationsModal({ evaluations, totalScore, agreement, onClose }: 
                   <span className="font-mono text-xs font-bold text-accent">{jr.totalScore}</span>
                 </div>
 
+                {/* Compact personality rows */}
                 {jr.evaluations?.map((ev, ei) => {
                   const key = `${ji}-${ei}`;
                   const isExpanded = expandedCard === key;
@@ -308,6 +372,17 @@ function JudgeEvaluationsModal({ evaluations, totalScore, agreement, onClose }: 
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function MetaCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="stat-card">
+      <div className="font-mono text-xs text-text-muted uppercase tracking-wide mb-1">
+        <ScrambleText text={label} delay={0} duration={400} />
+      </div>
+      <div className="font-mono text-sm font-semibold text-accent">{value}</div>
     </div>
   );
 }

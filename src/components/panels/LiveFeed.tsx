@@ -363,21 +363,6 @@ function FeedEventRow({ event }: { event: FeedEvent }) {
     );
   }
 
-  if (event.type === 'reputation_updated' && event.agent) {
-    return (
-      <div className="feed-event px-4 py-2 font-mono text-xs">
-        <span className="text-text-muted">{time}</span>
-        <span className="text-text-secondary">
-          {' '}— Agent{' '}
-          <Link to={`/agents/${event.agent}`} className="text-accent hover:underline transition-colors">
-            {truncAddr(event.agent)}
-          </Link>
-          {' '}reputation updated to{' '}
-          <span className="text-accent font-semibold">{event.newRating}</span>
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div className="feed-event px-4 py-2 font-mono text-xs text-text-muted">

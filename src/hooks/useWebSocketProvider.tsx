@@ -328,13 +328,8 @@ function mapWSEventToFeedEvent(wsEvent: WSEvent): FeedEvent | null {
       };
 
     case 'reputation_updated':
-      return {
-        id,
-        type: 'reputation_updated',
-        timestamp: now,
-        agent: data.agentAddr as string,
-        newRating: data.score as number,
-      };
+      // Ignore — global ERC-8004 events, not platform-specific
+      return null;
 
     default:
       return null;

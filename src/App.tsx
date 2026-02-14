@@ -10,6 +10,8 @@ import { AgentProfile } from './components/AgentProfile';
 import { HowToPlay } from './components/HowToPlay';
 import { BountyMarketplace } from './components/bounties/BountyMarketplace';
 import { BountyDetail } from './components/bounties/BountyDetail';
+import { BountyManagement } from './components/bounties/BountyManagement';
+import { BountyManageDetail } from './components/bounties/BountyManageDetail';
 import { StatsProvider } from './hooks/useStats';
 import { WebSocketProvider } from './hooks/useWebSocketProvider';
 
@@ -25,6 +27,8 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/agents/:address" element={<AgentProfile />} />
                   <Route path="/bounties" element={<BountyMarketplace />} />
+                  <Route path="/bounties/manage" element={<BountyManagement />} />
+                  <Route path="/bounties/manage/:id" element={<BountyManageDetail />} />
                   <Route path="/bounties/:id" element={<BountyDetail />} />
                   <Route path="/how-to-join" element={<HowToPlay />} />
                 </Routes>

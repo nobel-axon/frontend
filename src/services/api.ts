@@ -85,12 +85,14 @@ export function fetchAgentHistory(
 // Bounty endpoints
 
 export function fetchBounties(
-  filters: { phase?: string; category?: string; limit?: number; offset?: number } = {},
+  filters: { phase?: string; category?: string; creator?: string; includeRejected?: boolean; limit?: number; offset?: number } = {},
 ): Promise<{ bounties: BountyResponse[]; total: number; limit: number; offset: number }> {
   if (config.useMockBounties) return mockFetchBounties(filters);
   const params = new URLSearchParams();
   if (filters.phase) params.set('phase', filters.phase);
   if (filters.category) params.set('category', filters.category);
+  if (filters.creator) params.set('creator', filters.creator);
+  if (filters.includeRejected) params.set('include_rejected', 'true');
   if (filters.limit) params.set('limit', String(filters.limit));
   if (filters.offset) params.set('offset', String(filters.offset));
   const qs = params.toString();

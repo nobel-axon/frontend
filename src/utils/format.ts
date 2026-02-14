@@ -15,6 +15,14 @@ export function fromWei(wei: string | undefined): number {
   return parseFloat(`${intPart}.${fracPart}`);
 }
 
+/** Convert a human-readable token amount (e.g. "1000") to a wei string. */
+export function toWei(amount: string): string {
+  if (!amount || amount === '0') return '0';
+  const [intPart, fracPart = ''] = amount.split('.');
+  const padded = fracPart.padEnd(DECIMALS, '0').slice(0, DECIMALS);
+  return (intPart + padded).replace(/^0+/, '') || '0';
+}
+
 /** Format a wei string as a compact human-readable value (e.g. 1.2M, 34.5K, 100) with dot thousands. */
 export function fmtWei(wei: string | undefined): string {
   return compact(fromWei(wei));

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 import { BountyStatusBadge } from './BountyStatusBadge';
 import { fmtWei } from '../../utils/format';
 import { config } from '../../config';
@@ -22,13 +23,16 @@ function accentBorder(phase: string) {
   }
 }
 
-export function BountyCard({ bounty }: { bounty: BountyResponse }) {
+export function BountyCard({ bounty, linkPrefix }: { bounty: BountyResponse; linkPrefix?: string }) {
+  const { address } = useAccount();
+  const isMine = address && bounty.creatorAddr.toLowerCase() === address.toLowerCase();
+  const prefix = linkPrefix ?? (isMine ? '/bounties/manage' : '/bounties');
   const timeLeft = bounty.expiresAt ? getTimeRemaining(bounty.expiresAt) : null;
   const isActive = bounty.phase === 'active' || bounty.phase === 'open';
 
   return (
     <Link
-      to={`/bounties/${bounty.bountyId}`}
+      to={`${prefix}/${bounty.bountyId}`}
       className={`flex flex-col panel ${accentBorder(bounty.phase)} hover:border-accent-300 hover:shadow-md transition-all`}
     >
       <div className="p-4 space-y-3 flex-1">
@@ -66,7 +70,7 @@ export function BountyCard({ bounty }: { bounty: BountyResponse }) {
             </span>
           ) : bounty.settleTxHash ? (
             <span className="flex items-center gap-1">
-              Split by score
+              Split by reputation
               <ExplorerLink txHash={bounty.settleTxHash} />
             </span>
           ) : null}

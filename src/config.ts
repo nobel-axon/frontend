@@ -30,6 +30,7 @@ export const config = {
   // Token
   tokenDecimals: 18,
   neuronAddress: '0xDa2A083164f58BaFa8bB8E117dA9d4D1E7e67777',
+  bountyArenaAddress: '0x733b8cbBF2bffE057477D98596607F48390E42F0' as `0x${string}`,
   nadFunUrl: 'https://nad.fun/tokens/0xDa2A083164f58BaFa8bB8E117dA9d4D1E7e67777',
 
   // Game economics (display only — actual values come from contract/backend)

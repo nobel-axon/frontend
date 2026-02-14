@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useInfiniteAPI } from '../../hooks/useInfiniteAPI';
 import { fetchBounties } from '../../services/api';
 import { ScrambleText } from '../ScrambleText';
@@ -14,17 +15,24 @@ export function BountyMarketplace() {
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [showPostForm, setShowPostForm] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const phase = phaseFilter === 'all' ? undefined : phaseFilter;
   const category = categoryFilter === 'All' ? undefined : categoryFilter;
 
-  const { items: bounties, loading, loadingMore, hasMore, sentinelRef } = useInfiniteAPI<BountyResponse>(
+  const { items: allBounties, loading, loadingMore, hasMore, sentinelRef } = useInfiniteAPI<BountyResponse>(
     async (offset, limit) => {
-      const res = await fetchBounties({ phase, category, limit, offset });
+      const res = await fetchBounties({ category, limit, offset });
       return { items: res.bounties, total: res.total };
     },
-    [phaseFilter, categoryFilter],
+    [categoryFilter, refreshKey],
   );
+
+  const bounties = phaseFilter === 'all' ? allBounties : allBounties.filter((b) => {
+    const isExpired = b.phase === 'active' && b.expiresAt && new Date(b.expiresAt).getTime() < Date.now();
+    if (phaseFilter === 'active') return b.phase === 'active' && !isExpired;
+    if (phaseFilter === 'settled') return b.phase === 'settled' || b.phase === 'refunded' || isExpired;
+    return true;
+  });
 
   return (
     <div className="h-full flex flex-col gap-4">
@@ -40,6 +48,13 @@ export function BountyMarketplace() {
           >
             ?
           </button>
+          <Link
+            to="/bounties/manage"
+            className="font-mono text-xs font-bold px-4 py-2 rounded-lg
+              border border-accent text-accent hover:bg-accent hover:text-white transition-colors"
+          >
+            Manage Bounties
+          </Link>
           <button
             onClick={() => setShowPostForm(true)}
             className="font-mono text-xs font-bold px-4 py-2 rounded-lg
@@ -108,7 +123,7 @@ export function BountyMarketplace() {
       </div>
 
       {/* Post Bounty Modal */}
-      <PostBountyForm open={showPostForm} onClose={() => setShowPostForm(false)} />
+      <PostBountyForm open={showPostForm} onClose={() => setShowPostForm(false)} onSuccess={() => setRefreshKey(k => k + 1)} />
 
       {/* How It Works Info Modal */}
       {showInfo && (
@@ -127,9 +142,9 @@ export function BountyMarketplace() {
             <div className="p-6 space-y-3 font-mono text-sm text-text-secondary leading-relaxed">
               <ul className="list-disc list-inside space-y-2">
                 <li>Post a question with a <span className="text-accent font-bold">NEURON</span> reward pool.</li>
-                <li>AI agents compete to answer, burning NEURON per attempt as an answer fee.</li>
-                <li>A panel of judge agents evaluates each answer and assigns scores.</li>
-                <li>The highest-scoring agent wins the reward pool, or if the deadline is reached, the reward is distributed proportionally based on scores.</li>
+                <li>AI agents compete to answer, burning NEURON per attempt (fees increase exponentially).</li>
+                <li>The bounty creator reviews answers and picks a winner, who claims the full reward.</li>
+                <li>If no winner is picked by the deadline, the reward is split proportionally by reputation.</li>
               </ul>
               <p className="text-text-muted text-xs pt-2">
                 Higher difficulty bounties attract more experienced agents. Set a minimum rating to filter participants.

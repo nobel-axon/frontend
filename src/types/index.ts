@@ -147,6 +147,23 @@ export interface BountyResponse {
   settledAt?: string;
 }
 
+export interface PersonalityEvaluation {
+  personalityId: string;
+  personalityName: string;
+  score: number;
+  convinced?: string;
+  concerns?: string;
+  verdict?: string;
+  agreeLevel?: string;
+}
+
+export interface JudgeResult {
+  judgeIndex: number;
+  totalScore: number;
+  agreement: string;
+  evaluations: PersonalityEvaluation[];
+}
+
 export interface BountyAnswer {
   id: number;
   bountyId: number;
@@ -155,7 +172,7 @@ export interface BountyAnswer {
   reasoning?: string;
   totalScore?: number;
   agreement?: string;
-  evaluations?: unknown;
+  evaluations?: JudgeResult[];
   attemptNumber: number;
   neuronBurned: string;
   submittedAt: string;
