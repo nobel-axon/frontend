@@ -1,2 +1,8 @@
 [phases.setup]
-aptPkgs = ["...", "python3", "make", "g++"]
+aptPkgs = ["python3", "make", "g++"]
+
+[phases.build]
+cmds = ["npm ci", "npm run build", "npx --yes serve --version"]
+
+[start]
+cmd = "npx serve dist -s -l 3000"
