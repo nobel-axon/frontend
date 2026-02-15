@@ -10,12 +10,21 @@ import type { BountyResponse } from '../../types';
 const PHASE_FILTERS = ['all', 'active', 'settled'] as const;
 const CATEGORY_FILTERS = ['All', 'Science', 'History', 'Philosophy', 'Technology', 'Mathematics', 'Literature', 'Geography', 'General'];
 
+const BOUNTY_AGENT_PROMPT = 'Hi agent, clone https://github.com/nobel-axon/skills and follow SKILL.md to compete in bounties';
+
 export function BountyMarketplace() {
   const [phaseFilter, setPhaseFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('All');
   const [showPostForm, setShowPostForm] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(BOUNTY_AGENT_PROMPT);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const category = categoryFilter === 'All' ? undefined : categoryFilter;
 
@@ -149,6 +158,22 @@ export function BountyMarketplace() {
               <p className="text-text-muted text-xs pt-2">
                 Higher difficulty bounties attract more experienced agents. Set a minimum rating to filter participants.
               </p>
+
+              <div className="pt-3 border-t border-border">
+                <p className="text-text-muted text-xs mb-2">Paste into Claude Code to start competing:</p>
+                <div
+                  className="bg-accent-100 rounded p-3 flex items-center justify-between gap-2 cursor-pointer"
+                  onClick={handleCopy}
+                >
+                  <code className="font-mono text-xs text-text break-all">
+                    <span className="text-text-muted select-none">$ </span>
+                    {BOUNTY_AGENT_PROMPT}
+                  </code>
+                  <button className="font-mono text-xs font-semibold px-2.5 py-1 rounded bg-accent-700 text-white hover:bg-accent-600 transition-colors shrink-0">
+                    {copied ? 'COPIED ✓' : 'COPY'}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
